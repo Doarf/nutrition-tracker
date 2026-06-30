@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0D1117;--surface:#161B22;--surface2:#1C2230;
-  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
-  --em:#5A8A76;--em-dim:rgba(90,138,118,.13);--em-txt:#7EB09C;
-  --text:#E6EDF3;--muted:#8B949E;
-  --danger:#C0605C;--warn:#A0823A;--warn-dim:rgba(160,130,58,.15);
-  --info:#4F85B0;--purple:#8A78AC;
+  --bg:#0B0E14;--surface:#111520;--surface2:#171C2B;
+  --border:rgba(148,163,184,.08);--border2:rgba(148,163,184,.15);
+  --em:#4F7EC4;--em-dim:rgba(79,126,196,.1);--em-txt:#7FA8E0;
+  --text:#DDE4EF;--muted:#5C6B82;
+  --danger:#B85454;--warn:#AA8030;--warn-dim:rgba(170,128,48,.12);
+  --info:#3D9E96;--purple:#7E6EC0;
   --mono:'JetBrains Mono',monospace;
   --r:10px;--rl:14px;
 }
@@ -66,9 +66,9 @@ tr:hover td{background:rgba(255,255,255,.025)}
 .tdl{font-family:-apple-system,sans-serif;color:var(--text);font-size:13px}
 
 .badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-weight:600;letter-spacing:.04em}
-.bok{background:var(--em-dim);color:var(--em-txt)}
-.bwrn{background:var(--warn-dim);color:var(--warn)}
-.bdgr{background:rgba(192,96,92,.15);color:var(--danger)}
+.bok{background:rgba(61,158,150,.12);color:#5AC4BC}
+.bwrn{background:rgba(170,128,48,.12);color:#CDA040}
+.bdgr{background:rgba(184,84,84,.15);color:#D07070}
 
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text);transition:all .15s}
 .btn:hover{border-color:var(--em);color:var(--em-txt)}
@@ -91,7 +91,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
 .tinfo{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
 .tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
-.week-row-header td{background:rgba(90,138,118,.06);color:var(--em-txt);font-weight:600}
+.week-row-header td{background:rgba(79,126,196,.06);color:var(--em-txt);font-weight:600}
 </style>
 </head>
 <body>
@@ -175,7 +175,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div style="position:relative;height:185px"><canvas id="chart-mini" role="img" aria-label="Weight curve"></canvas></div>
     <div class="tinfo">
       <div class="tdot" style="background:var(--em)"></div><span>Actual</span>
-      <div class="tdot" style="background:rgba(255,255,255,.3);margin-left:8px"></div><span>Target trajectory</span>
+      <div class="tdot" style="background:rgba(148,163,184,.3);margin-left:8px"></div><span>Target trajectory</span>
       <div class="tdot" style="background:var(--danger);margin-left:8px"></div><span>Floor 71 kg</span>
     </div>
   </div>
@@ -199,7 +199,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div style="position:relative;height:250px"><canvas id="chart-weight" role="img" aria-label="Weight history"></canvas></div>
     <div class="tinfo">
       <div class="tdot" style="background:var(--em)"></div><span>Actual</span>
-      <div class="tdot" style="background:rgba(255,255,255,.3);margin-left:8px"></div><span>Trajectory</span>
+      <div class="tdot" style="background:rgba(148,163,184,.3);margin-left:8px"></div><span>Trajectory</span>
       <div class="tdot" style="background:var(--danger);margin-left:8px"></div><span>Floor 71 kg</span>
     </div>
   </div>
@@ -220,9 +220,9 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="sec">Calories consumed vs burned — by week</div>
     <div style="position:relative;height:220px"><canvas id="chart-weekly" role="img" aria-label="Weekly calories"></canvas></div>
     <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
-      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:var(--em)"></span>Consumed (avg/d)</span>
-      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:var(--danger)"></span>Burned (avg/d)</span>
-      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:rgba(255,255,255,.25)"></span>Target consumed</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:rgba(79,126,196,.65)"></span>Consumed (avg/d)</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:rgba(184,84,84,.55)"></span>Burned (avg/d)</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:rgba(148,163,184,.25)"></span>Target consumed</span>
     </div>
   </div>
   <div class="card" style="margin-bottom:16px">
@@ -310,7 +310,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div class="sec">Summary</div>
     <div class="g3" id="data-summary" style="margin-bottom:0"></div>
   </div>
-  <div class="card" style="border-color:rgba(192,96,92,.2)">
+  <div class="card" style="border-color:rgba(184,84,84,.2)">
     <div class="sec" style="color:var(--danger)">Danger zone</div>
     <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Permanently deletes all data.</p>
     <button class="btn" style="border-color:var(--danger);color:var(--danger)" onclick="resetData()">Reset all</button>
@@ -509,15 +509,15 @@ function renderToday() {
   CH.mini = new Chart(document.getElementById('chart-mini'),{
     type:'line',
     data:{labels,datasets:[
-      {label:'Actual',data,borderColor:'#5A8A76',backgroundColor:'rgba(90,138,118,.1)',tension:.4,pointRadius:4,pointBackgroundColor:'#5A8A76',fill:true},
-      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.25)',borderDash:[4,4],tension:0,pointRadius:0},
-      {label:'Floor', data:floor,borderColor:'#C0605C',borderDash:[2,4],tension:0,pointRadius:0}
+      {label:'Actual',data,borderColor:'#4F7EC4',backgroundColor:'rgba(79,126,196,.08)',tension:.4,pointRadius:4,pointBackgroundColor:'#4F7EC4',fill:true},
+      {label:'Target',data:traj,borderColor:'rgba(148,163,184,.25)',borderDash:[4,4],tension:0,pointRadius:0},
+      {label:'Floor', data:floor,borderColor:'#B85454',borderDash:[2,4],tension:0,pointRadius:0}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       scales:{
-        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10}}},
-        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-2,max:S.profile.start+1}
+        x:{grid:{color:'rgba(148,163,184,.06)'},ticks:{color:'#5C6B82',font:{size:10}}},
+        y:{grid:{color:'rgba(148,163,184,.06)'},ticks:{color:'#5C6B82',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-2,max:S.profile.start+1}
       }
     }
   });
@@ -546,15 +546,15 @@ function renderWeight() {
   CH.weight = new Chart(document.getElementById('chart-weight'),{
     type:'line',
     data:{labels,datasets:[
-      {label:'Actual',data,borderColor:'#5A8A76',backgroundColor:'rgba(90,138,118,.08)',tension:.4,pointRadius:5,pointBackgroundColor:'#5A8A76',fill:true},
-      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.25)',borderDash:[5,5],tension:0,pointRadius:0},
-      {label:'Floor', data:floor,borderColor:'#C0605C',borderDash:[2,4],tension:0,pointRadius:0}
+      {label:'Actual',data,borderColor:'#4F7EC4',backgroundColor:'rgba(79,126,196,.07)',tension:.4,pointRadius:5,pointBackgroundColor:'#4F7EC4',fill:true},
+      {label:'Target',data:traj,borderColor:'rgba(148,163,184,.25)',borderDash:[5,5],tension:0,pointRadius:0},
+      {label:'Floor', data:floor,borderColor:'#B85454',borderDash:[2,4],tension:0,pointRadius:0}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       scales:{
-        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},autoSkip:false,maxRotation:45}},
-        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-1,max:S.profile.start+1}
+        x:{grid:{color:'rgba(148,163,184,.06)'},ticks:{color:'#5C6B82',font:{size:10},autoSkip:false,maxRotation:45}},
+        y:{grid:{color:'rgba(148,163,184,.06)'},ticks:{color:'#5C6B82',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-1,max:S.profile.start+1}
       }
     }
   });
@@ -596,15 +596,15 @@ function renderNutrition() {
   CH.weekly = new Chart(document.getElementById('chart-weekly'),{
     type:'bar',
     data:{labels:wkLabels,datasets:[
-      {label:'Avg consumed/d',data:wkKcal,backgroundColor:'rgba(90,138,118,.7)',borderRadius:4,order:1},
-      {label:'Avg burned/d',data:wkBurned,backgroundColor:'rgba(192,96,92,.6)',borderRadius:4,order:2},
-      {label:'Target',data:wkTarget,type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,4],pointRadius:0,tension:0,fill:false,order:0}
+      {label:'Avg consumed/d',data:wkKcal,backgroundColor:'rgba(79,126,196,.65)',borderRadius:4,order:1},
+      {label:'Avg burned/d',data:wkBurned,backgroundColor:'rgba(184,84,84,.55)',borderRadius:4,order:2},
+      {label:'Target',data:wkTarget,type:'line',borderColor:'rgba(148,163,184,.3)',borderDash:[4,4],pointRadius:0,tension:0,fill:false,order:0}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       scales:{
-        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8B949E',font:{size:10}}},
-        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toLocaleString('en-US')}}
+        x:{grid:{color:'rgba(148,163,184,.05)'},ticks:{color:'#5C6B82',font:{size:10}}},
+        y:{grid:{color:'rgba(148,163,184,.05)'},ticks:{color:'#5C6B82',font:{size:10},callback:v=>v.toLocaleString('en-US')}}
       }
     }
   });
