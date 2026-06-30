@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recomp Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0D1117;--surface:#161B22;--surface2:#1C2230;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+  --em:#10B981;--em-dim:rgba(16,185,129,.13);--em-txt:#34D399;
+  --text:#E6EDF3;--muted:#8B949E;
+  --danger:#F85149;--warn:#D29922;--warn-dim:rgba(210,153,34,.15);
+  --info:#58A6FF;--purple:#BC8CFF;
+  --mono:'JetBrains Mono',monospace;
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh;display:flex}
+
+.sidebar{width:210px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0}
+.logo{padding:0 18px 20px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--em);border-bottom:1px solid var(--border);margin-bottom:10px;letter-spacing:.06em}
+.nav{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .15s;user-select:none}
+.nav:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav.on{color:var(--em-txt);border-left-color:var(--em);background:var(--em-dim)}
+.sidebar-foot{padding:0 14px;border-top:1px solid var(--border);padding-top:14px;margin-top:8px;display:flex;flex-direction:column;gap:8px}
+
+.main{margin-left:210px;flex:1;padding:28px 32px;min-height:100vh}
+.page{display:none}.page.on{display:block}
+
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:12px}
+.ptitle{font-size:19px;font-weight:600}
+.psub{font-size:12px;color:var(--muted);margin-top:3px}
+.sec{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;margin-bottom:12px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px}
+.card2{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px}
+
+.mlabel{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.mval{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1}
+.munit{font-size:12px;color:var(--muted);margin-left:3px;font-family:var(--mono)}
+.mdelta{font-size:11px;margin-top:4px;font-family:var(--mono)}
+.pos{color:var(--em-txt)}.neg{color:var(--danger)}
+
+.bwrap{background:rgba(255,255,255,.06);border-radius:4px;height:5px;overflow:hidden;margin-top:5px}
+.bfill{height:100%;border-radius:4px;transition:width .4s}
+.bem{background:var(--em)}.bprot{background:var(--info)}.bcarb{background:var(--warn)}.bfat{background:var(--purple)}.bburn{background:var(--danger)}
+
+.mrow{margin-bottom:11px}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.mname{font-size:12px;color:var(--muted)}
+.mnums{font-family:var(--mono);font-size:12px}
+.mtgt{color:var(--muted)}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 10px 9px;border-bottom:1px solid var(--border);font-weight:500}
+td{padding:9px 10px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04);font-family:var(--mono)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.025)}
+.tdl{font-family:-apple-system,sans-serif;color:var(--text);font-size:13px}
+
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-weight:600;letter-spacing:.04em}
+.bok{background:var(--em-dim);color:var(--em-txt)}
+.bwrn{background:var(--warn-dim);color:var(--warn)}
+.bdgr{background:rgba(248,81,73,.15);color:var(--danger)}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text);transition:all .15s}
+.btn:hover{border-color:var(--em);color:var(--em-txt)}
+.btnem{background:var(--em);border-color:var(--em);color:#0D1117;font-weight:600}
+.btnem:hover{background:var(--em-txt);border-color:var(--em-txt)}
+.btngroup{display:flex;gap:8px;flex-wrap:wrap}
+
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:12px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.finput{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 11px;outline:none;transition:border .15s;width:100%}
+.finput:focus{border-color:var(--em)}
+
+hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
+
+.pill{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px}
+.pname{font-size:13px;color:var(--text)}
+.pmacros{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;gap:10px;align-items:center}
+
+.tinfo{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+.week-row-header td{background:rgba(16,185,129,.06);color:var(--em-txt);font-weight:600}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="logo">⬡ RECOMP</div>
+  <div class="nav on" onclick="go('today')">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+    Today
+  </div>
+  <div class="nav" onclick="go('weight')">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,13 5,7 9,10 13,3"/></svg>
+    Weight
+  </div>
+  <div class="nav" onclick="go('nutrition')">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 4v4l3 2"/></svg>
+    Nutrition
+  </div>
+  <div class="nav" onclick="go('log')">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="1" width="12" height="14" rx="1"/><line x1="5" y1="5" x2="11" y2="5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="11" x2="9" y2="11"/></svg>
+    Log
+  </div>
+  <div class="nav" onclick="go('data')">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>
+    Data
+  </div>
+  <div style="flex:1"></div>
+  <div class="sidebar-foot">
+    <button class="btn" style="width:100%;justify-content:center;font-size:12px" onclick="exportJSON()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+      Export .json
+    </button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- TODAY -->
+<div class="page on" id="page-today">
+  <div class="ph">
+    <div><div class="ptitle">Dashboard</div><div class="psub" id="today-date"></div></div>
+    <button class="btnem btn" onclick="go('log')">+ Add meal</button>
+  </div>
+  <div class="g4" id="summary-cards"></div>
+  <div class="g21">
+    <div class="card">
+      <div class="sec">Today's Macros</div>
+      <div id="macro-bars"></div>
+      <hr class="d">
+      <div id="deficit-row" style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--muted)">Estimated net deficit</span>
+        <span id="deficit-val" style="font-family:var(--mono);font-size:13px"></span>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="sec">Progress</div>
+      <div>
+        <div class="mlabel">Current weight</div>
+        <div class="mval" id="cur-w">—<span class="munit">kg</span></div>
+        <div class="mdelta" id="cur-delta"></div>
+      </div>
+      <hr class="d" style="margin:0">
+      <div>
+        <div class="mlabel">Goal</div>
+        <div class="mval" style="font-size:18px" id="goal-w">—<span class="munit">kg</span></div>
+      </div>
+      <div>
+        <div class="mlabel">Remaining</div>
+        <div class="mval" style="font-size:18px" id="remain-w">—<span class="munit">kg</span></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px">
+          <span>Progress</span><span id="prog-pct" style="font-family:var(--mono)">0%</span>
+        </div>
+        <div class="bwrap" style="height:7px"><div class="bfill bem" id="prog-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec">Weight — History</div>
+    <div style="position:relative;height:185px"><canvas id="chart-mini" role="img" aria-label="Weight curve"></canvas></div>
+    <div class="tinfo">
+      <div class="tdot" style="background:var(--em)"></div><span>Actual</span>
+      <div class="tdot" style="background:rgba(255,255,255,.3);margin-left:8px"></div><span>Target trajectory</span>
+      <div class="tdot" style="background:var(--danger);margin-left:8px"></div><span>Floor 71 kg</span>
+    </div>
+  </div>
+</div>
+
+<!-- WEIGHT -->
+<div class="page" id="page-weight">
+  <div class="ph">
+    <div><div class="ptitle">Weight tracking</div><div class="psub">Weigh-in Monday morning fasted</div></div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="sec">Add a weigh-in</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:11px;align-items:flex-end">
+      <div class="fg"><label class="flabel">Date</label><input class="finput" type="date" id="w-date"></div>
+      <div class="fg"><label class="flabel">Weight (kg)</label><input class="finput" type="number" step="0.1" id="w-val" placeholder="96.0"></div>
+      <button class="btnem btn" onclick="addWeight()">Save</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="sec">Full history</div>
+    <div style="position:relative;height:250px"><canvas id="chart-weight" role="img" aria-label="Weight history"></canvas></div>
+    <div class="tinfo">
+      <div class="tdot" style="background:var(--em)"></div><span>Actual</span>
+      <div class="tdot" style="background:rgba(255,255,255,.3);margin-left:8px"></div><span>Trajectory</span>
+      <div class="tdot" style="background:var(--danger);margin-left:8px"></div><span>Floor 71 kg</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec">Entries</div>
+    <table><thead><tr><th>#</th><th>Date</th><th>Weight</th><th>Δ</th><th>Status</th><th></th></tr></thead>
+    <tbody id="weight-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- NUTRITION -->
+<div class="page" id="page-nutrition">
+  <div class="ph">
+    <div><div class="ptitle">Nutrition</div><div class="psub">Weekly averages · calories consumed vs burned</div></div>
+  </div>
+  <div class="g4" id="nutri-targets"></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="sec">Calories consumed vs burned — by week</div>
+    <div style="position:relative;height:220px"><canvas id="chart-weekly" role="img" aria-label="Weekly calories"></canvas></div>
+    <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:var(--em)"></span>Consumed (avg/d)</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:var(--danger)"></span>Burned (avg/d)</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:rgba(255,255,255,.25)"></span>Target consumed</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="sec">Weekly table</div>
+    <table>
+      <thead><tr><th>Week</th><th>Days tracked</th><th>Avg kcal</th><th>Avg prot.</th><th>Avg carbs</th><th>Avg fat</th><th>Avg burn</th><th>Net deficit</th></tr></thead>
+      <tbody id="weekly-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="sec">Daily detail</div>
+    <table>
+      <thead><tr><th>Date</th><th>Kcal</th><th>Prot.</th><th>Carbs</th><th>Fat</th><th>Burn</th><th>Deficit</th><th>Status</th></tr></thead>
+      <tbody id="nutri-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- LOG -->
+<div class="page" id="page-log">
+  <div class="ph">
+    <div><div class="ptitle">Food log</div><div class="psub" id="log-date-title"></div></div>
+    <input type="date" class="finput" id="log-nav-date" style="width:auto" onchange="renderLog()">
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="sec">Add a food</div>
+      <div class="fgrid">
+        <div class="fg" style="grid-column:span 3"><label class="flabel">Name</label><input class="finput" type="text" id="j-name" placeholder="Grilled chicken"></div>
+      </div>
+      <div class="fgrid">
+        <div class="fg"><label class="flabel">Calories (kcal)</label><input class="finput" type="number" id="j-kcal" placeholder="300"></div>
+        <div class="fg"><label class="flabel">Protein (g)</label><input class="finput" type="number" id="j-prot" placeholder="30"></div>
+        <div class="fg"><label class="flabel">Carbs (g)</label><input class="finput" type="number" id="j-carb" placeholder="0"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:11px;align-items:flex-end;margin-bottom:14px">
+        <div class="fg"><label class="flabel">Fat (g)</label><input class="finput" type="number" id="j-fat" placeholder="5"></div>
+        <button class="btnem btn" onclick="addEntry()">Add</button>
+      </div>
+      <hr class="d" style="margin-bottom:14px">
+      <div class="sec">Calories burned (watch)</div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:11px;align-items:flex-end">
+        <div class="fg"><label class="flabel">Total daily burn (kcal)</label><input class="finput" type="number" id="j-burned" placeholder="2800" oninput="saveBurned()"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:1px">
+          <span style="font-size:11px;color:var(--muted);font-family:var(--mono)" id="burned-saved-label"></span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec">Today's totals</div>
+      <div id="log-totals"></div>
+      <hr class="d">
+      <div id="log-deficit"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec">Logged foods</div>
+    <div id="log-entries"></div>
+  </div>
+</div>
+
+<!-- DATA -->
+<div class="page" id="page-data">
+  <div class="ph"><div><div class="ptitle">Data</div><div class="psub">Import / export</div></div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="sec">Export</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Download the full history as JSON — same format as your current file.</p>
+      <button class="btnem btn" onclick="exportJSON()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+        Download .json
+      </button>
+    </div>
+    <div class="card">
+      <div class="sec">Import</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Load an existing .json file. Entries are merged by date.</p>
+      <label class="btn" style="cursor:pointer">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14V5M4 8l4-4 4 4"/><line x1="2" y1="2" x2="14" y2="2"/></svg>
+        Load .json
+        <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+      </label>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="sec">Summary</div>
+    <div class="g3" id="data-summary" style="margin-bottom:0"></div>
+  </div>
+  <div class="card" style="border-color:rgba(248,81,73,.2)">
+    <div class="sec" style="color:var(--danger)">Danger zone</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Permanently deletes all data.</p>
+    <button class="btn" style="border-color:var(--danger);color:var(--danger)" onclick="resetData()">Reset all</button>
+  </div>
+</div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'recomp_v3';
+
+function defaultState() {
+  return {
+    profile: { start: 0, goal: 0, goalDate: '', lean: 0,
+      targets: { kcal: 2000, protein: 150, carbs: 200, fat: 65 } },
+    weights: {},
+    nutrition: {}
+  };
+}
+
+let S = defaultState();
+function load() { const r = localStorage.getItem(STORAGE_KEY); if (r) try { S = JSON.parse(r); } catch(e){} }
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }
+load();
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const T = () => S.profile.targets;
+const today = () => new Date().toISOString().slice(0,10);
+
+function sortedWeights() {
+  return Object.entries(S.weights).map(([d,kg])=>({date:d,kg})).sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function dayTotals(date) {
+  const day = S.nutrition[date];
+  if (!day || !day.entries || !day.entries.length) return null;
+  return day.entries.reduce((a,e)=>({kcal:a.kcal+(e.kcal||0),p:a.p+(e.p||0),c:a.c+(e.c||0),f:a.f+(e.f||0)}),{kcal:0,p:0,c:0,f:0});
+}
+
+function dayBurned(date) {
+  return (S.nutrition[date] && S.nutrition[date].burned) ? S.nutrition[date].burned : null;
+}
+
+function fmtDate(str) {
+  return new Date(str+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function weekKey(dateStr) {
+  const d = new Date(dateStr+'T12:00:00');
+  const day = d.getDay() || 7;
+  const mon = new Date(d); mon.setDate(d.getDate() - day + 1);
+  return mon.toISOString().slice(0,10);
+}
+
+function weeksLeft() {
+  return Math.max(0, Math.round((new Date(S.profile.goalDate)-new Date())/(7*24*3600*1000)));
+}
+
+function trajectory(dates) {
+  const ws = sortedWeights();
+  if (!ws.length) return dates.map(()=>S.profile.start);
+  const start = new Date(ws[0].date+'T12:00:00');
+  const startKg = ws[0].kg;
+  return dates.map(d=>{
+    const weeks = (new Date(d+'T12:00:00')-start)/(7*24*3600*1000);
+    return Math.max(S.profile.lean, parseFloat((startKg-0.7*weeks).toFixed(2)));
+  });
+}
+
+function macroBar(name, val, target, cls, color) {
+  const pct = Math.min(100, Math.round((val/target)*100));
+  return `<div class="mrow">
+    <div class="mhdr">
+      <span class="mname">${name}</span>
+      <span class="mnums" style="color:${color}">${Math.round(val)}<span class="mtgt">/${target}</span></span>
+    </div>
+    <div class="bwrap"><div class="bfill ${cls}" style="width:${pct}%"></div></div>
+  </div>`;
+}
+
+function statusBadge(tot) {
+  if (!tot) return '<span class="badge bwrn">—</span>';
+  const t = T();
+  if (tot.kcal < t.kcal*0.85) return '<span class="badge bdgr">TOO LOW</span>';
+  if (tot.kcal > t.kcal*1.2)  return '<span class="badge bwrn">EXCESS</span>';
+  if (tot.p < t.protein*0.9)  return '<span class="badge bwrn">PROT↓</span>';
+  return '<span class="badge bok">OK</span>';
+}
+
+function byWeek() {
+  const map = {};
+  Object.keys(S.nutrition).sort().forEach(d => {
+    const wk = weekKey(d);
+    if (!map[wk]) map[wk] = [];
+    map[wk].push(d);
+  });
+  return map;
+}
+
+function weekStats(dates) {
+  let kcal=0,p=0,c=0,f=0,burned=0,nNut=0,nBurn=0;
+  dates.forEach(d=>{
+    const tot = dayTotals(d);
+    if (tot) { kcal+=tot.kcal; p+=tot.p; c+=tot.c; f+=tot.f; nNut++; }
+    const b = dayBurned(d);
+    if (b) { burned+=b; nBurn++; }
+  });
+  return {
+    kcal:  nNut  ? kcal/nNut  : null,
+    p:     nNut  ? p/nNut     : null,
+    c:     nNut  ? c/nNut     : null,
+    f:     nNut  ? f/nNut     : null,
+    burned:nBurn ? burned/nBurn: null,
+    nNut, nBurn,
+    deficit: (nNut && nBurn) ? (burned/nBurn - kcal/nNut) : null
+  };
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+let CH = {};
+function go(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  document.querySelectorAll('.nav').forEach(n=>{ if((n.getAttribute('onclick')||'').includes("'"+id+"'")) n.classList.add('on'); });
+  render(id);
+}
+function render(id) {
+  if(id==='today')     renderToday();
+  if(id==='weight')    renderWeight();
+  if(id==='nutrition') renderNutrition();
+  if(id==='log')       renderLog();
+  if(id==='data')      renderData();
+}
+
+// ── TODAY ─────────────────────────────────────────────────────────────────────
+function renderToday() {
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const ws = sortedWeights();
+  const last = ws[ws.length-1], prev = ws[ws.length-2];
+  const curKg = last ? last.kg : S.profile.start;
+  const delta = (last&&prev) ? curKg-prev.kg : null;
+  const lost = S.profile.start - curKg;
+  const remain = curKg - S.profile.goal;
+  const progress = Math.min(100, Math.round(lost/(S.profile.start-S.profile.goal)*100));
+
+  const now = today();
+  const tot = dayTotals(now) || {kcal:0,p:0,c:0,f:0};
+  const burned = dayBurned(now);
+  const deficit = burned ? burned - tot.kcal : null;
+  const t = T();
+
+  document.getElementById('goal-w').innerHTML   = S.profile.goal+'<span class="munit">kg</span>';
+  document.getElementById('cur-w').innerHTML    = curKg.toFixed(1)+'<span class="munit">kg</span>';
+  document.getElementById('remain-w').innerHTML = remain.toFixed(1)+'<span class="munit">kg</span>';
+  document.getElementById('cur-delta').innerHTML = delta!==null
+    ? `<span class="${delta<=0?'pos':'neg'}">${delta>0?'+':''}${delta.toFixed(1)} kg vs prev. week</span>` : '';
+  document.getElementById('prog-pct').textContent = progress+'%';
+  document.getElementById('prog-bar').style.width = progress+'%';
+
+  document.getElementById('summary-cards').innerHTML = `
+    <div class="card2"><div class="mlabel">Current weight</div><div class="mval">${curKg.toFixed(1)}<span class="munit">kg</span></div>
+      ${delta!==null?`<div class="mdelta ${delta<=0?'pos':'neg'}">${delta>0?'+':''}${delta.toFixed(1)} kg</div>`:''}
+    </div>
+    <div class="card2"><div class="mlabel">Calories consumed</div>
+      <div class="mval">${Math.round(tot.kcal).toLocaleString('en-US')}<span class="munit">kcal</span></div>
+      <div class="mdelta" style="color:var(--muted)">/ ${t.kcal.toLocaleString('en-US')} target</div>
+    </div>
+    <div class="card2"><div class="mlabel">Calories burned</div>
+      <div class="mval" style="color:${burned?'var(--danger)':'var(--muted)'}">${burned?burned.toLocaleString('en-US'):'—'}<span class="munit">kcal</span></div>
+      <div class="mdelta" style="color:var(--muted)">watch</div>
+    </div>
+    <div class="card2"><div class="mlabel">Net deficit</div>
+      <div class="mval" style="color:${deficit&&deficit>0?'var(--em-txt)':deficit&&deficit<0?'var(--danger)':'var(--muted)'}">${deficit!==null?Math.round(deficit).toLocaleString('en-US'):'—'}<span class="munit">kcal</span></div>
+      <div class="mdelta" style="color:var(--muted)">${deficit!==null?(deficit>0?'deficit ✓':'surplus ⚠'):'unmeasured'}</div>
+    </div>
+  `;
+
+  document.getElementById('macro-bars').innerHTML =
+    macroBar('Calories', tot.kcal, t.kcal, 'bem', 'var(--em-txt)') +
+    macroBar('Protein', tot.p, t.protein, 'bprot', 'var(--info)') +
+    macroBar('Carbs', tot.c, t.carbs, 'bcarb', 'var(--warn)') +
+    macroBar('Fat', tot.f, t.fat, 'bfat', 'var(--purple)');
+
+  document.getElementById('deficit-val').innerHTML = deficit !== null
+    ? `<span style="color:${deficit>0?'var(--em-txt)':'var(--danger)'}">${deficit>0?'+':''}${Math.round(deficit).toLocaleString('en-US')} kcal</span>`
+    : '<span style="color:var(--muted)">Enter burn in the log</span>';
+
+  const labels = ws.map(w=>fmtDate(w.date));
+  const data   = ws.map(w=>w.kg);
+  const traj   = trajectory(ws.map(w=>w.date));
+  const floor  = ws.map(()=>S.profile.lean);
+
+  if(CH.mini) CH.mini.destroy();
+  CH.mini = new Chart(document.getElementById('chart-mini'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Actual',data,borderColor:'#10B981',backgroundColor:'rgba(16,185,129,.1)',tension:.4,pointRadius:4,pointBackgroundColor:'#10B981',fill:true},
+      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.25)',borderDash:[4,4],tension:0,pointRadius:0},
+      {label:'Floor',data:floor,borderColor:'#F85149',borderDash:[2,4],tension:0,pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10}}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-2,max:S.profile.start+1}
+      }
+    }
+  });
+}
+
+// ── WEIGHT ────────────────────────────────────────────────────────────────────
+function renderWeight() {
+  document.getElementById('w-date').value = today();
+  const ws = sortedWeights();
+
+  document.getElementById('weight-tbody').innerHTML = ws.map((w,i)=>{
+    const prev = i>0?ws[i-1].kg:null;
+    const d = prev!==null ? w.kg-prev : null;
+    return `<tr>
+      <td>${i+1}</td><td>${w.date}</td><td>${w.kg.toFixed(1)} kg</td>
+      <td style="color:${d===null?'var(--muted)':d<=0?'var(--em-txt)':'var(--danger)'}">${d===null?'—':(d>0?'+':'')+d.toFixed(1)+' kg'}</td>
+      <td>${d===null?'':`<span class="badge ${d<=-0.3?'bok':d>0?'bdgr':'bwrn'}">${d<=-0.3?'OK':d>0?'↑':'SLOW'}</span>`}</td>
+      <td><button class="btn" style="font-size:10px;padding:2px 8px;color:var(--danger);border-color:rgba(248,81,73,.3)" onclick="delWeight('${w.date}')">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  const labels=ws.map(w=>fmtDate(w.date)), data=ws.map(w=>w.kg);
+  const traj=trajectory(ws.map(w=>w.date)), floor=ws.map(()=>S.profile.lean);
+
+  if(CH.weight) CH.weight.destroy();
+  CH.weight = new Chart(document.getElementById('chart-weight'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Actual',data,borderColor:'#10B981',backgroundColor:'rgba(16,185,129,.08)',tension:.4,pointRadius:5,pointBackgroundColor:'#10B981',fill:true},
+      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.25)',borderDash:[5,5],tension:0,pointRadius:0},
+      {label:'Floor',data:floor,borderColor:'#F85149',borderDash:[2,4],tension:0,pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},autoSkip:false,maxRotation:45}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-1,max:S.profile.start+1}
+      }
+    }
+  });
+}
+
+function addWeight() {
+  const date = document.getElementById('w-date').value;
+  const kg = parseFloat(document.getElementById('w-val').value);
+  if(!date||isNaN(kg)||kg<40||kg>250) return;
+  S.weights[date]=kg; save();
+  document.getElementById('w-val').value='';
+  renderWeight();
+}
+function delWeight(date) {
+  if(!confirm('Delete weigh-in for '+date+'?')) return;
+  delete S.weights[date]; save(); renderWeight();
+}
+
+// ── NUTRITION ─────────────────────────────────────────────────────────────────
+function renderNutrition() {
+  const t = T();
+
+  document.getElementById('nutri-targets').innerHTML = `
+    <div class="card2"><div class="mlabel">Target calories</div><div class="mval" style="font-size:20px">${t.kcal}<span class="munit">kcal</span></div></div>
+    <div class="card2"><div class="mlabel">Protein</div><div class="mval" style="font-size:20px;color:var(--info)">${t.protein}<span class="munit">g</span></div></div>
+    <div class="card2"><div class="mlabel">Carbs</div><div class="mval" style="font-size:20px;color:var(--warn)">${t.carbs}<span class="munit">g</span></div></div>
+    <div class="card2"><div class="mlabel">Fat</div><div class="mval" style="font-size:20px;color:var(--purple)">${t.fat}<span class="munit">g</span></div></div>
+  `;
+
+  const wkMap = byWeek();
+  const wkKeys = Object.keys(wkMap).sort();
+
+  const wkLabels = wkKeys.map(wk => {
+    const d = new Date(wk+'T12:00:00');
+    return 'Wk. '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  });
+  const wkKcal   = wkKeys.map(wk => { const s=weekStats(wkMap[wk]); return s.kcal!==null?Math.round(s.kcal):null; });
+  const wkBurned = wkKeys.map(wk => { const s=weekStats(wkMap[wk]); return s.burned!==null?Math.round(s.burned):null; });
+  const wkTarget = wkKeys.map(()=>t.kcal);
+
+  if(CH.weekly) CH.weekly.destroy();
+  CH.weekly = new Chart(document.getElementById('chart-weekly'),{
+    type:'bar',
+    data:{labels:wkLabels,datasets:[
+      {label:'Avg consumed/d',data:wkKcal,backgroundColor:'rgba(16,185,129,.7)',borderRadius:4,order:1},
+      {label:'Avg burned/d',data:wkBurned,backgroundColor:'rgba(248,81,73,.6)',borderRadius:4,order:2},
+      {label:'Target',data:wkTarget,type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,4],pointRadius:0,tension:0,fill:false,order:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8B949E',font:{size:10}}},
+        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toLocaleString('en-US')}}
+      }
+    }
+  });
+
+  document.getElementById('weekly-tbody').innerHTML = wkKeys.map(wk=>{
+    const s = weekStats(wkMap[wk]);
+    const def = s.deficit !== null ? Math.round(s.deficit) : null;
+    const defColor = def===null?'var(--muted)':def>0?'var(--em-txt)':'var(--danger)';
+    const wkDate = new Date(wk+'T12:00:00');
+    const wkEnd  = new Date(wkDate); wkEnd.setDate(wkDate.getDate()+6);
+    const label  = wkDate.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+wkEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return `<tr class="week-row-header">
+      <td class="tdl">${label}</td>
+      <td>${s.nNut} d</td>
+      <td>${s.kcal!==null?Math.round(s.kcal).toLocaleString('en-US'):'—'}</td>
+      <td style="color:var(--info)">${s.p!==null?Math.round(s.p)+'g':'—'}</td>
+      <td style="color:var(--warn)">${s.c!==null?Math.round(s.c)+'g':'—'}</td>
+      <td style="color:var(--purple)">${s.f!==null?Math.round(s.f)+'g':'—'}</td>
+      <td style="color:var(--danger)">${s.burned!==null?Math.round(s.burned).toLocaleString('en-US'):'—'}</td>
+      <td style="color:${defColor}">${def!==null?(def>0?'+':'')+def.toLocaleString('en-US')+' kcal':'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const days = Object.keys(S.nutrition).sort().reverse();
+  document.getElementById('nutri-tbody').innerHTML = days.map(d=>{
+    const tot = dayTotals(d); if(!tot) return '';
+    const burned = dayBurned(d);
+    const def = burned ? burned-tot.kcal : null;
+    const defColor = def===null?'var(--muted)':def>0?'var(--em-txt)':'var(--danger)';
+    return `<tr>
+      <td class="tdl">${d}</td>
+      <td>${Math.round(tot.kcal).toLocaleString('en-US')}</td>
+      <td style="color:var(--info)">${Math.round(tot.p)}g</td>
+      <td style="color:var(--warn)">${Math.round(tot.c)}g</td>
+      <td style="color:var(--purple)">${Math.round(tot.f)}g</td>
+      <td style="color:var(--danger)">${burned?burned.toLocaleString('en-US'):'—'}</td>
+      <td style="color:${defColor}">${def!==null?(def>0?'+':'')+Math.round(def).toLocaleString('en-US')+' kcal':'—'}</td>
+      <td>${statusBadge(tot)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── LOG ───────────────────────────────────────────────────────────────────────
+function renderLog() {
+  const inp = document.getElementById('log-nav-date');
+  if (!inp.value) inp.value = today();
+  const date = inp.value;
+  document.getElementById('log-date-title').textContent =
+    new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const entries = S.nutrition[date] ? S.nutrition[date].entries : [];
+  const burned  = dayBurned(date);
+  const tot = dayTotals(date) || {kcal:0,p:0,c:0,f:0};
+  const t = T();
+
+  document.getElementById('j-burned').value = burned || '';
+  document.getElementById('burned-saved-label').textContent = burned ? '✓ saved' : '';
+
+  document.getElementById('log-totals').innerHTML =
+    macroBar('Calories', tot.kcal, t.kcal, 'bem', 'var(--em-txt)') +
+    macroBar('Protein', tot.p, t.protein, 'bprot', 'var(--info)') +
+    macroBar('Carbs', tot.c, t.carbs, 'bcarb', 'var(--warn)') +
+    macroBar('Fat', tot.f, t.fat, 'bfat', 'var(--purple)');
+
+  const def = burned ? burned - tot.kcal : null;
+  document.getElementById('log-deficit').innerHTML = def !== null
+    ? `<div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;color:var(--muted)">Burned</span>
+        <span style="font-family:var(--mono);font-size:13px;color:var(--danger)">${burned.toLocaleString('en-US')} kcal</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <span style="font-size:12px;color:var(--muted)">Net deficit</span>
+        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:${def>0?'var(--em-txt)':'var(--danger)'}">${def>0?'+':''}${Math.round(def).toLocaleString('en-US')} kcal</span>
+      </div>`
+    : `<span style="font-size:12px;color:var(--muted)">No burn recorded for this day.</span>`;
+
+  document.getElementById('log-entries').innerHTML = entries.length
+    ? entries.map((e,i)=>`
+      <div class="pill">
+        <span class="pname">${e.name}</span>
+        <div class="pmacros">
+          <span>${Math.round(e.kcal)} kcal</span>
+          <span style="color:var(--info)">P ${Math.round(e.p)}g</span>
+          <span style="color:var(--warn)">C ${Math.round(e.c)}g</span>
+          <span style="color:var(--purple)">F ${Math.round(e.f)}g</span>
+          <button class="btn" style="font-size:10px;padding:2px 7px;color:var(--danger);border-color:rgba(248,81,73,.3)" onclick="delEntry('${date}',${i})">✕</button>
+        </div>
+      </div>`).join('')
+    : '<p style="font-size:12px;color:var(--muted)">No food logged for this day.</p>';
+}
+
+function addEntry() {
+  const date = document.getElementById('log-nav-date').value || today();
+  const name = document.getElementById('j-name').value.trim();
+  const kcal = parseFloat(document.getElementById('j-kcal').value)||0;
+  const p    = parseFloat(document.getElementById('j-prot').value)||0;
+  const c    = parseFloat(document.getElementById('j-carb').value)||0;
+  const f    = parseFloat(document.getElementById('j-fat').value) ||0;
+  if(!name) return;
+  if(!S.nutrition[date]) S.nutrition[date]={entries:[]};
+  S.nutrition[date].entries.push({name,kcal,p,c,f});
+  save();
+  ['j-name','j-kcal','j-prot','j-carb','j-fat'].forEach(id=>document.getElementById(id).value='');
+  renderLog();
+}
+
+function saveBurned() {
+  const date = document.getElementById('log-nav-date').value || today();
+  const val  = parseFloat(document.getElementById('j-burned').value);
+  if(!S.nutrition[date]) S.nutrition[date]={entries:[]};
+  if(!isNaN(val) && val>0) {
+    S.nutrition[date].burned = Math.round(val);
+    document.getElementById('burned-saved-label').textContent='✓ saved';
+  } else {
+    delete S.nutrition[date].burned;
+    document.getElementById('burned-saved-label').textContent='';
+  }
+  save();
+  renderLog();
+}
+
+function delEntry(date,idx) {
+  S.nutrition[date].entries.splice(idx,1);
+  if(!S.nutrition[date].entries.length && !S.nutrition[date].burned) delete S.nutrition[date];
+  save(); renderLog();
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+function renderData() {
+  const nutDays = Object.keys(S.nutrition).length;
+  const entries = Object.values(S.nutrition).reduce((n,d)=>n+(d.entries?d.entries.length:0),0);
+  const burnDays = Object.values(S.nutrition).filter(d=>d.burned).length;
+  document.getElementById('data-summary').innerHTML = `
+    <div class="card2"><div class="mlabel">Weigh-ins</div><div class="mval" style="font-size:20px">${Object.keys(S.weights).length}</div></div>
+    <div class="card2"><div class="mlabel">Nutrition days</div><div class="mval" style="font-size:20px">${nutDays}</div></div>
+    <div class="card2"><div class="mlabel">Burn days</div><div class="mval" style="font-size:20px">${burnDays}</div></div>
+  `;
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`recomp_${today()}.json`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if(data.weights)   Object.assign(S.weights, data.weights);
+      if(data.nutrition) Object.keys(data.nutrition).forEach(d=>{ S.nutrition[d]=data.nutrition[d]; });
+      if(data.profile)   S.profile={...S.profile,...data.profile};
+      save(); alert('Imported successfully.'); renderData();
+    } catch { alert('Invalid JSON file.'); }
+  };
+  reader.readAsText(file);
+}
+
+function resetData() {
+  if(!confirm('Delete all data?')) return;
+  S=defaultState(); save(); renderData();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderToday();
+</script>
+</body>
+</html>
