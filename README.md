@@ -3,7 +3,7 @@
 <div align="center">
 
 **Personal recomposition dashboard — weight, calories, macros & deficit tracking**  
-*Single-file · localStorage · JSON · Chart.js · No build step*
+*Single-file · localStorage · GitHub Gist sync · Chart.js · No build step*
 
 ![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-browser-blue?style=flat-square)
@@ -19,7 +19,7 @@
 
 ## About the project
 
-**nutrition-tracker** is a zero-dependency personal dashboard for tracking a recomposition goal. It runs entirely in the browser — no server, no account, no cloud. Data lives in `localStorage` and can be exported / imported as a plain JSON file at any time.
+**nutrition-tracker** is a zero-dependency personal dashboard for tracking a recomposition goal. It runs entirely in the browser — no server, no account, no cloud. Data lives in `localStorage`, can be exported as a plain JSON file, and optionally synced across devices via a private GitHub Gist.
 
 ### The problem
 
@@ -34,6 +34,7 @@ Most nutrition apps are bloated, require an account, or lock your data behind a 
 | Weekly overview | Aggregated table + bar chart per ISO week |
 | Weight progress | Weekly weigh-ins with target trajectory curve |
 | Data ownership | Export / import via plain JSON — no lock-in |
+| Multi-device sync | GitHub Gist push/pull via classic PAT |
 | Zero setup | Single HTML file, open in browser and go |
 
 ---
@@ -41,17 +42,18 @@ Most nutrition apps are bloated, require an account, or lock your data behind a 
 ## Architecture
 
 ```
-Browser
-   │
-   ├── nutrition-dashboard_arthur.html   (UI + logic, self-contained)
-   │        │
-   │        ├── localStorage             (live data store)
-   │        │        │
-   │        │        └── recomp_*.json  (export / import, gitignored)
-   │        │
-   │        └── Chart.js (CDN)          (weight & weekly calorie charts)
-   │
-   └── No server · No build · No account
+Browser (PC 1)                          Browser (PC 2)
+   │                                         │
+   ├── nutrition-dashboard_arthur.html        ├── nutrition-dashboard_arthur.html
+   │        │                                │        │
+   │        ├── localStorage                 │        ├── localStorage
+   │        │        │                       │        │
+   │        └── Chart.js (CDN)              │        └── Chart.js (CDN)
+   │                                         │
+   └─────────────┐               ┌───────────┘
+                 │    Push/Pull  │
+           GitHub Gist (private)
+           recomp_data.json
 ```
 
 ---
@@ -62,9 +64,9 @@ Browser
 |-----|-------------|
 | **Today** | Summary cards (weight, consumed, burned, net deficit) + macro bars + weight history chart |
 | **Weight** | Add weekly weigh-ins, view chart with actual vs target trajectory and lean floor |
-| **Nutrition** | Weekly averages table, consumed vs burned bar chart, full daily detail table |
+| **Nutrition** | Weekly averages table (most recent first), consumed vs burned bar chart, full daily detail |
 | **Log** | Add meals by date (name, kcal, protein, carbs, fat) + daily burn from watch |
-| **Data** | Export full history as JSON, import & merge, reset |
+| **Data** | Export / import JSON · GitHub Gist push/pull · reset |
 
 ---
 
@@ -76,13 +78,14 @@ Browser
 | Logic | Vanilla JavaScript | State management, weekly aggregation, chart rendering |
 | Charts | Chart.js 4.4 (CDN) | Weight curve, weekly calorie bar chart |
 | Storage | localStorage | Persistent in-browser data store |
-| Data format | JSON | Portable export / import |
+| Sync | GitHub Gist API | Cross-device data sync via private Gist |
+| Data format | JSON | Portable export / import / sync |
 
 ---
 
 ## Data format
 
-Data is stored in `localStorage` under the key `recomp_v3` and can be exported as a JSON file at any time.
+Data is stored in `localStorage` under the key `recomp_v3` and synced to a private Gist as `recomp_data.json`.
 
 ```json
 {
@@ -145,7 +148,44 @@ cd nutrition-tracker
 #    Data → Download .json   (or sidebar Export button)
 ```
 
-> **Privacy note** — the JSON data file is gitignored. Your personal body metrics and food logs never leave your machine unless you explicitly share the exported file.
+---
+
+## Multi-device sync (GitHub Gist)
+
+Sync your data across devices without any server or cloud account — just a private GitHub Gist.
+
+### Setup (once per device)
+
+1. Generate a [classic personal access token](https://github.com/settings/tokens/new?scopes=gist&description=recomp-dashboard) with only the **`gist`** scope
+2. Open the dashboard → **Data** tab
+3. Paste the token in the **GitHub Personal Access Token** field
+
+### First push (PC 1)
+
+```
+Data → Push to Gist
+```
+
+A private Gist is created automatically. Copy the **Gist ID** displayed in the field.
+
+### First pull (PC 2)
+
+```
+Data → paste token → paste Gist ID → Pull from Gist
+```
+
+Data merges into localStorage. Token and Gist ID are saved locally — enter them only once per device.
+
+### Daily workflow
+
+```
+End of session  →  Push to Gist
+Start of session  →  Pull from Gist
+```
+
+---
+
+> **Privacy note** — the JSON data file is gitignored. Your personal body metrics and food logs never leave your machine unless you explicitly export or push to your private Gist.
 
 ---
 
@@ -154,6 +194,8 @@ cd nutrition-tracker
 ```
 nutrition-tracker/
 ├── nutrition-dashboard_arthur.html   # Full dashboard (UI + logic)
+├── assets/
+│   └── pixel-dumbbell.svg            # README image
 ├── .gitignore                        # Excludes recomp_*.json
 └── README.md
 ```
