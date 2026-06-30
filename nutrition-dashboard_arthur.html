@@ -3,124 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recomp Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Recomp · Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0D1117;--surface:#161B22;--surface2:#1C2230;
-  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
-  --em:#10B981;--em-dim:rgba(16,185,129,.13);--em-txt:#34D399;
-  --text:#E6EDF3;--muted:#8B949E;
-  --danger:#F85149;--warn:#D29922;--warn-dim:rgba(210,153,34,.15);
-  --info:#58A6FF;--purple:#BC8CFF;
+  --bg:#07090F;
+  --surface:#0D1422;
+  --surface2:#141E30;
+  --surface3:#1C2840;
+  --border:rgba(148,163,184,.08);
+  --border2:rgba(148,163,184,.16);
+  --border3:rgba(148,163,184,.28);
+
+  --em:#10B981; --em-dim:rgba(16,185,129,.1); --em-glow:rgba(16,185,129,.25);
+  --em-txt:#34D399; --em-dark:#059669;
+  --danger:#F87171; --danger-dim:rgba(248,113,113,.1);
+  --warn:#FCD34D;   --warn-dim:rgba(252,211,77,.1);
+  --info:#60A5FA;   --info-dim:rgba(96,165,250,.1);
+  --purple:#C084FC; --purple-dim:rgba(192,132,252,.1);
+
+  --text:#F1F5F9; --text2:#CBD5E1; --muted:#64748B; --muted2:#475569;
   --mono:'JetBrains Mono',monospace;
-  --r:10px;--rl:14px;
+  --sans:'Inter',-apple-system,sans-serif;
+  --r:12px; --rl:16px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh;display:flex}
 
-.sidebar{width:210px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0}
-.logo{padding:0 18px 20px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--em);border-bottom:1px solid var(--border);margin-bottom:10px;letter-spacing:.06em}
-.nav{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .15s;user-select:none}
-.nav:hover{color:var(--text);background:rgba(255,255,255,.04)}
-.nav.on{color:var(--em-txt);border-left-color:var(--em);background:var(--em-dim)}
-.sidebar-foot{padding:0 14px;border-top:1px solid var(--border);padding-top:14px;margin-top:8px;display:flex;flex-direction:column;gap:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-.main{margin-left:210px;flex:1;padding:28px 32px;min-height:100vh}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 55% 50% at 0% 0%,rgba(16,185,129,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 55% at 100% 100%,rgba(99,102,241,.05) 0%,transparent 60%);
+  color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;display:flex;line-height:1.5;
+}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:220px;min-height:100vh;
+  background:rgba(10,15,28,.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+}
+
+.logo-wrap{padding:22px 18px 18px;border-bottom:1px solid var(--border)}
+.logo{
+  font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;
+  background:linear-gradient(135deg,#10B981,#34D399);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.logo-sub{font-size:10px;color:var(--muted2);margin-top:2px;letter-spacing:.08em;text-transform:uppercase}
+
+.nav-section{padding:10px 8px;flex:1}
+
+.nav{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:10px;
+  font-size:13px;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all .15s;user-select:none;
+  margin-bottom:1px;border:1px solid transparent;
+}
+.nav:hover{color:var(--text2);background:rgba(255,255,255,.04)}
+.nav.on{
+  color:var(--em-txt);
+  background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(16,185,129,.04));
+  border-color:rgba(16,185,129,.18);
+}
+.nav svg{flex-shrink:0;opacity:.8}
+.nav.on svg{opacity:1}
+
+.sidebar-foot{padding:12px;border-top:1px solid var(--border)}
+
+/* ── MAIN ── */
+.main{margin-left:220px;flex:1;padding:32px 36px;min-height:100vh}
 .page{display:none}.page.on{display:block}
 
-.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:12px}
-.ptitle{font-size:19px;font-weight:600}
+/* ── PAGE HEADER ── */
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;gap:12px}
+.ptitle{font-size:21px;font-weight:700;letter-spacing:-.02em}
 .psub{font-size:12px;color:var(--muted);margin-top:3px}
-.sec{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;margin-bottom:12px}
+.sec{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;margin-bottom:14px}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px}
-.card2{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+/* ── CARDS ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--rl);padding:20px;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.03) 0%,transparent 60%);
+  pointer-events:none;border-radius:inherit;
+}
 
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
-.g21{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px}
+.card2{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative}
 
-.mlabel{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.mval{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1}
-.munit{font-size:12px;color:var(--muted);margin-left:3px;font-family:var(--mono)}
-.mdelta{font-size:11px;margin-top:4px;font-family:var(--mono)}
+/* ── GRIDS ── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px}
+
+/* ── STAT CARDS ── */
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);
+  padding:18px;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--al,rgba(16,185,129,.5))}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.35);border-color:var(--border2)}
+.stat-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.stat-value{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;color:var(--text)}
+.stat-unit{font-size:13px;color:var(--muted);margin-left:3px}
+.stat-delta{font-family:var(--mono);font-size:11px;margin-top:6px}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* ── METRICS ── */
+.mlabel{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.mval{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1}
+.munit{font-size:13px;color:var(--muted);margin-left:3px;font-family:var(--mono)}
+.mdelta{font-size:11px;margin-top:6px;font-family:var(--mono)}
 .pos{color:var(--em-txt)}.neg{color:var(--danger)}
 
-.bwrap{background:rgba(255,255,255,.06);border-radius:4px;height:5px;overflow:hidden;margin-top:5px}
-.bfill{height:100%;border-radius:4px;transition:width .4s}
-.bem{background:var(--em)}.bprot{background:var(--info)}.bcarb{background:var(--warn)}.bfat{background:var(--purple)}.bburn{background:var(--danger)}
+/* ── MACRO BARS ── */
+.mrow{margin-bottom:14px}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.mname{font-size:12px;font-weight:500;color:var(--text2)}
+.mnums{font-family:var(--mono);font-size:12px;font-weight:500}
+.mtgt{color:var(--muted);font-weight:400}
 
-.mrow{margin-bottom:11px}
-.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.mname{font-size:12px;color:var(--muted)}
-.mnums{font-family:var(--mono);font-size:12px}
-.mtgt{color:var(--muted)}
+.bwrap{background:rgba(255,255,255,.06);border-radius:100px;height:6px;overflow:visible;position:relative}
+.bfill{height:100%;border-radius:100px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 
+.bem  {background:linear-gradient(90deg,#059669,#10B981,#34D399);box-shadow:0 0 12px rgba(16,185,129,.5)}
+.bprot{background:linear-gradient(90deg,#1D4ED8,#3B82F6,#60A5FA);box-shadow:0 0 12px rgba(59,130,246,.4)}
+.bcarb{background:linear-gradient(90deg,#D97706,#F59E0B,#FCD34D);box-shadow:0 0 12px rgba(245,158,11,.4)}
+.bfat {background:linear-gradient(90deg,#7C3AED,#A78BFA,#C084FC);box-shadow:0 0 12px rgba(167,139,250,.4)}
+.bburn{background:linear-gradient(90deg,#DC2626,#EF4444,#F87171)}
+
+/* ── TABLES ── */
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 10px 9px;border-bottom:1px solid var(--border);font-weight:500}
-td{padding:9px 10px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04);font-family:var(--mono)}
+th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:0 12px 12px;font-weight:600;white-space:nowrap}
+td{padding:11px 12px;font-size:12px;border-bottom:1px solid var(--border);font-family:var(--mono);color:var(--text2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,.025)}
-.tdl{font-family:-apple-system,sans-serif;color:var(--text);font-size:13px}
+tbody tr{transition:background .1s}
+tbody tr:hover td{background:rgba(255,255,255,.025)}
+.tdl{font-family:var(--sans);color:var(--text);font-size:13px;font-weight:500}
 
-.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-weight:600;letter-spacing:.04em}
-.bok{background:var(--em-dim);color:var(--em-txt)}
-.bwrn{background:var(--warn-dim);color:var(--warn)}
-.bdgr{background:rgba(248,81,73,.15);color:var(--danger)}
+.week-row-header td{background:rgba(16,185,129,.05);color:var(--em-txt);font-weight:600;border-bottom-color:rgba(16,185,129,.1)}
 
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text);transition:all .15s}
-.btn:hover{border-color:var(--em);color:var(--em-txt)}
-.btnem{background:var(--em);border-color:var(--em);color:#0D1117;font-weight:600}
-.btnem:hover{background:var(--em-txt);border-color:var(--em-txt)}
-.btngroup{display:flex;gap:8px;flex-wrap:wrap}
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:100px;font-family:var(--mono);font-weight:600;letter-spacing:.04em}
+.bok {background:rgba(16,185,129,.1);color:var(--em-txt);border:1px solid rgba(16,185,129,.2)}
+.bwrn{background:rgba(252,211,77,.1);color:var(--warn);border:1px solid rgba(252,211,77,.2)}
+.bdgr{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2)}
 
-.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:12px}
-.fg{display:flex;flex-direction:column;gap:5px}
-.flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.finput{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:13px;padding:8px 11px;outline:none;transition:border .15s;width:100%}
-.finput:focus{border-color:var(--em)}
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);
+  font-size:13px;font-weight:500;cursor:pointer;
+  border:1px solid var(--border2);background:var(--surface2);color:var(--text2);
+  transition:all .15s;font-family:var(--sans);white-space:nowrap;
+}
+.btn:hover{border-color:var(--em);color:var(--em-txt);background:var(--em-dim)}
 
-hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
+.btnem{
+  background:linear-gradient(135deg,#059669,#10B981);
+  border:none;color:#fff;font-weight:600;
+  box-shadow:0 4px 14px rgba(16,185,129,.35);
+}
+.btnem:hover{
+  background:linear-gradient(135deg,#10B981,#34D399);
+  color:#fff;box-shadow:0 6px 18px rgba(16,185,129,.45);
+  transform:translateY(-1px);
+}
 
-.pill{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px}
-.pname{font-size:13px;color:var(--text)}
-.pmacros{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;gap:10px;align-items:center}
+/* ── FORMS ── */
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.fg{display:flex;flex-direction:column;gap:6px}
 
-.tinfo{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
-.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.flabel{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 
-.week-row-header td{background:rgba(16,185,129,.06);color:var(--em-txt);font-weight:600}
+.finput{
+  background:var(--surface2);border:1px solid var(--border2);border-radius:10px;
+  color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;
+  outline:none;transition:border .15s,box-shadow .15s;width:100%;
+}
+.finput:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+.finput::placeholder{color:var(--muted2)}
+
+hr.d{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* ── FOOD PILL ── */
+.pill{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;margin-bottom:8px;transition:border-color .15s;
+}
+.pill:hover{border-color:var(--border2)}
+.pname{font-size:13px;color:var(--text);font-weight:500}
+.pmacros{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;gap:12px;align-items:center}
+
+/* ── LEGEND ── */
+.tinfo{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.tdot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
 </style>
 </head>
 <body>
 
 <nav class="sidebar">
-  <div class="logo">⬡ RECOMP</div>
-  <div class="nav on" onclick="go('today')">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-    Today
+  <div class="logo-wrap">
+    <div class="logo">⬡ RECOMP</div>
+    <div class="logo-sub">Personal tracker</div>
   </div>
-  <div class="nav" onclick="go('weight')">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,13 5,7 9,10 13,3"/></svg>
-    Weight
+
+  <div class="nav-section">
+    <div class="nav on" onclick="go('today')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Today
+    </div>
+    <div class="nav" onclick="go('weight')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1,13 5,7 9,10 13,3"/></svg>
+      Weight
+    </div>
+    <div class="nav" onclick="go('nutrition')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 4v4l3 2"/></svg>
+      Nutrition
+    </div>
+    <div class="nav" onclick="go('log')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="1" width="12" height="14" rx="1.5"/><line x1="5" y1="5" x2="11" y2="5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="11" x2="9" y2="11"/></svg>
+      Log
+    </div>
+    <div class="nav" onclick="go('data')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>
+      Data
+    </div>
   </div>
-  <div class="nav" onclick="go('nutrition')">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 4v4l3 2"/></svg>
-    Nutrition
-  </div>
-  <div class="nav" onclick="go('log')">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="1" width="12" height="14" rx="1"/><line x1="5" y1="5" x2="11" y2="5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="11" x2="9" y2="11"/></svg>
-    Log
-  </div>
-  <div class="nav" onclick="go('data')">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="4" rx="6" ry="2"/><path d="M2 4v4c0 1.1 2.7 2 6 2s6-.9 6-2V4"/><path d="M2 8v4c0 1.1 2.7 2 6 2s6-.9 6-2V8"/></svg>
-    Data
-  </div>
-  <div style="flex:1"></div>
+
   <div class="sidebar-foot">
-    <button class="btn" style="width:100%;justify-content:center;font-size:12px" onclick="exportJSON()">
+    <button class="btn" style="width:100%;justify-content:center" onclick="exportJSON()">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
       Export .json
     </button>
@@ -133,7 +263,10 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
 <div class="page on" id="page-today">
   <div class="ph">
     <div><div class="ptitle">Dashboard</div><div class="psub" id="today-date"></div></div>
-    <button class="btnem btn" onclick="go('log')">+ Add meal</button>
+    <button class="btnem btn" onclick="go('log')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg>
+      Add meal
+    </button>
   </div>
   <div class="g4" id="summary-cards"></div>
   <div class="g21">
@@ -141,12 +274,12 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="sec">Today's Macros</div>
       <div id="macro-bars"></div>
       <hr class="d">
-      <div id="deficit-row" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;justify-content:space-between;align-items:center">
         <span style="font-size:12px;color:var(--muted)">Estimated net deficit</span>
-        <span id="deficit-val" style="font-family:var(--mono);font-size:13px"></span>
+        <span id="deficit-val" style="font-family:var(--mono);font-size:13px;font-weight:600"></span>
       </div>
     </div>
-    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+    <div class="card" style="display:flex;flex-direction:column;gap:16px">
       <div class="sec">Progress</div>
       <div>
         <div class="mlabel">Current weight</div>
@@ -154,25 +287,28 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
         <div class="mdelta" id="cur-delta"></div>
       </div>
       <hr class="d" style="margin:0">
-      <div>
-        <div class="mlabel">Goal</div>
-        <div class="mval" style="font-size:18px" id="goal-w">—<span class="munit">kg</span></div>
-      </div>
-      <div>
-        <div class="mlabel">Remaining</div>
-        <div class="mval" style="font-size:18px" id="remain-w">—<span class="munit">kg</span></div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px">
-          <span>Progress</span><span id="prog-pct" style="font-family:var(--mono)">0%</span>
+      <div style="display:flex;gap:20px">
+        <div>
+          <div class="mlabel">Goal</div>
+          <div class="mval" style="font-size:18px" id="goal-w">—<span class="munit">kg</span></div>
         </div>
-        <div class="bwrap" style="height:7px"><div class="bfill bem" id="prog-bar" style="width:0%"></div></div>
+        <div>
+          <div class="mlabel">Remaining</div>
+          <div class="mval" style="font-size:18px" id="remain-w">—<span class="munit">kg</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px">
+          <span style="font-weight:600;text-transform:uppercase;letter-spacing:.08em">Progress</span>
+          <span id="prog-pct" style="font-family:var(--mono);font-weight:600;color:var(--em-txt)">0%</span>
+        </div>
+        <div class="bwrap" style="height:8px"><div class="bfill bem" id="prog-bar" style="width:0%"></div></div>
       </div>
     </div>
   </div>
   <div class="card">
     <div class="sec">Weight — History</div>
-    <div style="position:relative;height:185px"><canvas id="chart-mini" role="img" aria-label="Weight curve"></canvas></div>
+    <div style="position:relative;height:190px"><canvas id="chart-mini" role="img" aria-label="Weight curve"></canvas></div>
     <div class="tinfo">
       <div class="tdot" style="background:var(--em)"></div><span>Actual</span>
       <div class="tdot" style="background:rgba(255,255,255,.3);margin-left:8px"></div><span>Target trajectory</span>
@@ -186,17 +322,17 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="ph">
     <div><div class="ptitle">Weight tracking</div><div class="psub">Weigh-in Monday morning fasted</div></div>
   </div>
-  <div class="card" style="margin-bottom:14px">
+  <div class="card" style="margin-bottom:16px">
     <div class="sec">Add a weigh-in</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:11px;align-items:flex-end">
+    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:flex-end">
       <div class="fg"><label class="flabel">Date</label><input class="finput" type="date" id="w-date"></div>
       <div class="fg"><label class="flabel">Weight (kg)</label><input class="finput" type="number" step="0.1" id="w-val" placeholder="96.0"></div>
       <button class="btnem btn" onclick="addWeight()">Save</button>
     </div>
   </div>
-  <div class="card" style="margin-bottom:14px">
+  <div class="card" style="margin-bottom:16px">
     <div class="sec">Full history</div>
-    <div style="position:relative;height:250px"><canvas id="chart-weight" role="img" aria-label="Weight history"></canvas></div>
+    <div style="position:relative;height:260px"><canvas id="chart-weight" role="img" aria-label="Weight history"></canvas></div>
     <div class="tinfo">
       <div class="tdot" style="background:var(--em)"></div><span>Actual</span>
       <div class="tdot" style="background:rgba(255,255,255,.3);margin-left:8px"></div><span>Trajectory</span>
@@ -216,25 +352,22 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     <div><div class="ptitle">Nutrition</div><div class="psub">Weekly averages · calories consumed vs burned</div></div>
   </div>
   <div class="g4" id="nutri-targets"></div>
-
-  <div class="card" style="margin-bottom:16px">
+  <div class="card" style="margin-bottom:18px">
     <div class="sec">Calories consumed vs burned — by week</div>
-    <div style="position:relative;height:220px"><canvas id="chart-weekly" role="img" aria-label="Weekly calories"></canvas></div>
-    <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
-      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:var(--em)"></span>Consumed (avg/d)</span>
-      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:var(--danger)"></span>Burned (avg/d)</span>
-      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:rgba(255,255,255,.25)"></span>Target consumed</span>
+    <div style="position:relative;height:230px"><canvas id="chart-weekly" role="img" aria-label="Weekly calories"></canvas></div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="tdot" style="background:var(--em)"></span>Consumed (avg/d)</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="tdot" style="background:var(--danger)"></span>Burned (avg/d)</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="tdot" style="background:rgba(255,255,255,.25)"></span>Target consumed</span>
     </div>
   </div>
-
-  <div class="card" style="margin-bottom:16px">
+  <div class="card" style="margin-bottom:18px">
     <div class="sec">Weekly table</div>
     <table>
-      <thead><tr><th>Week</th><th>Days tracked</th><th>Avg kcal</th><th>Avg prot.</th><th>Avg carbs</th><th>Avg fat</th><th>Avg burn</th><th>Net deficit</th></tr></thead>
+      <thead><tr><th>Week</th><th>Days</th><th>Avg kcal</th><th>Avg prot.</th><th>Avg carbs</th><th>Avg fat</th><th>Avg burn</th><th>Net deficit</th></tr></thead>
       <tbody id="weekly-tbody"></tbody>
     </table>
   </div>
-
   <div class="card">
     <div class="sec">Daily detail</div>
     <table>
@@ -261,16 +394,16 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
         <div class="fg"><label class="flabel">Protein (g)</label><input class="finput" type="number" id="j-prot" placeholder="30"></div>
         <div class="fg"><label class="flabel">Carbs (g)</label><input class="finput" type="number" id="j-carb" placeholder="0"></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:11px;align-items:flex-end;margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end;margin-bottom:16px">
         <div class="fg"><label class="flabel">Fat (g)</label><input class="finput" type="number" id="j-fat" placeholder="5"></div>
         <button class="btnem btn" onclick="addEntry()">Add</button>
       </div>
-      <hr class="d" style="margin-bottom:14px">
+      <hr class="d" style="margin-bottom:16px">
       <div class="sec">Calories burned (watch)</div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:11px;align-items:flex-end">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end">
         <div class="fg"><label class="flabel">Total daily burn (kcal)</label><input class="finput" type="number" id="j-burned" placeholder="2800" oninput="saveBurned()"></div>
-        <div style="display:flex;align-items:flex-end;padding-bottom:1px">
-          <span style="font-size:11px;color:var(--muted);font-family:var(--mono)" id="burned-saved-label"></span>
+        <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+          <span style="font-size:11px;color:var(--em-txt);font-family:var(--mono)" id="burned-saved-label"></span>
         </div>
       </div>
     </div>
@@ -293,7 +426,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="g2">
     <div class="card">
       <div class="sec">Export</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Download the full history as JSON — same format as your current file.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7">Download the full history as JSON — same format as your current file.</p>
       <button class="btnem btn" onclick="exportJSON()">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
         Download .json
@@ -301,7 +434,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
     <div class="card">
       <div class="sec">Import</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Load an existing .json file. Entries are merged by date.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7">Load an existing .json file. Entries are merged by date.</p>
       <label class="btn" style="cursor:pointer">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14V5M4 8l4-4 4 4"/><line x1="2" y1="2" x2="14" y2="2"/></svg>
         Load .json
@@ -309,13 +442,13 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
       </label>
     </div>
   </div>
-  <div class="card" style="margin-bottom:14px">
+  <div class="card" style="margin-bottom:16px">
     <div class="sec">Summary</div>
     <div class="g3" id="data-summary" style="margin-bottom:0"></div>
   </div>
-  <div class="card" style="border-color:rgba(248,81,73,.2)">
+  <div class="card" style="border-color:rgba(248,113,113,.18)">
     <div class="sec" style="color:var(--danger)">Danger zone</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Permanently deletes all data.</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7">Permanently deletes all data.</p>
     <button class="btn" style="border-color:var(--danger);color:var(--danger)" onclick="resetData()">Reset all</button>
   </div>
 </div>
@@ -324,7 +457,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── STATE ─────────────────────────────────────────────────────────────────────
+// ── STATE ────────────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'recomp_v3';
 
 function defaultState() {
@@ -341,7 +474,7 @@ function load() { const r = localStorage.getItem(STORAGE_KEY); if (r) try { S = 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }
 load();
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+// ── HELPERS ──────────────────────────────────────────────────────────────────
 const T = () => S.profile.targets;
 const today = () => new Date().toISOString().slice(0,10);
 
@@ -368,10 +501,6 @@ function weekKey(dateStr) {
   const day = d.getDay() || 7;
   const mon = new Date(d); mon.setDate(d.getDate() - day + 1);
   return mon.toISOString().slice(0,10);
-}
-
-function weeksLeft() {
-  return Math.max(0, Math.round((new Date(S.profile.goalDate)-new Date())/(7*24*3600*1000)));
 }
 
 function trajectory(dates) {
@@ -424,14 +553,38 @@ function weekStats(dates) {
     if (b) { burned+=b; nBurn++; }
   });
   return {
-    kcal:  nNut  ? kcal/nNut  : null,
-    p:     nNut  ? p/nNut     : null,
-    c:     nNut  ? c/nNut     : null,
-    f:     nNut  ? f/nNut     : null,
-    burned:nBurn ? burned/nBurn: null,
+    kcal:nNut?kcal/nNut:null, p:nNut?p/nNut:null,
+    c:nNut?c/nNut:null, f:nNut?f/nNut:null,
+    burned:nBurn?burned/nBurn:null,
     nNut, nBurn,
-    deficit: (nNut && nBurn) ? (burned/nBurn - kcal/nNut) : null
+    deficit:(nNut&&nBurn)?(burned/nBurn-kcal/nNut):null
   };
+}
+
+// ── CHART HELPERS ─────────────────────────────────────────────────────────────
+const CHART_DEFAULTS = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{
+    backgroundColor:'rgba(13,20,34,.95)',
+    borderColor:'rgba(148,163,184,.15)',borderWidth:1,
+    titleColor:'#F1F5F9',bodyColor:'#94A3B8',
+    padding:10,cornerRadius:8,
+    titleFont:{family:'Inter',size:12,weight:'600'},
+    bodyFont:{family:'JetBrains Mono',size:11}
+  }},
+  scales:{
+    x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748B',font:{family:'Inter',size:10}}},
+    y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748B',font:{family:'JetBrains Mono',size:10}}}
+  }
+};
+
+function areaGradient(ctx, colorTop, colorBot) {
+  if (!ctx.chart.chartArea) return colorTop;
+  const {top,bottom} = ctx.chart.chartArea;
+  const g = ctx.chart.ctx.createLinearGradient(0,top,0,bottom);
+  g.addColorStop(0, colorTop);
+  g.addColorStop(1, colorBot);
+  return g;
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────────────
@@ -462,7 +615,8 @@ function renderToday() {
   const delta = (last&&prev) ? curKg-prev.kg : null;
   const lost = S.profile.start - curKg;
   const remain = curKg - S.profile.goal;
-  const progress = Math.min(100, Math.round(lost/(S.profile.start-S.profile.goal)*100));
+  const progress = S.profile.start !== S.profile.goal
+    ? Math.min(100, Math.round(lost/(S.profile.start-S.profile.goal)*100)) : 0;
 
   const now = today();
   const tot = dayTotals(now) || {kcal:0,p:0,c:0,f:0};
@@ -478,34 +632,41 @@ function renderToday() {
   document.getElementById('prog-pct').textContent = progress+'%';
   document.getElementById('prog-bar').style.width = progress+'%';
 
-  document.getElementById('summary-cards').innerHTML = `
-    <div class="card2"><div class="mlabel">Current weight</div><div class="mval">${curKg.toFixed(1)}<span class="munit">kg</span></div>
-      ${delta!==null?`<div class="mdelta ${delta<=0?'pos':'neg'}">${delta>0?'+':''}${delta.toFixed(1)} kg</div>`:''}
-    </div>
-    <div class="card2"><div class="mlabel">Calories consumed</div>
-      <div class="mval">${Math.round(tot.kcal).toLocaleString('en-US')}<span class="munit">kcal</span></div>
-      <div class="mdelta" style="color:var(--muted)">/ ${t.kcal.toLocaleString('en-US')} target</div>
-    </div>
-    <div class="card2"><div class="mlabel">Calories burned</div>
-      <div class="mval" style="color:${burned?'var(--danger)':'var(--muted)'}">${burned?burned.toLocaleString('en-US'):'—'}<span class="munit">kcal</span></div>
-      <div class="mdelta" style="color:var(--muted)">watch</div>
-    </div>
-    <div class="card2"><div class="mlabel">Net deficit</div>
-      <div class="mval" style="color:${deficit&&deficit>0?'var(--em-txt)':deficit&&deficit<0?'var(--danger)':'var(--muted)'}">${deficit!==null?Math.round(deficit).toLocaleString('en-US'):'—'}<span class="munit">kcal</span></div>
-      <div class="mdelta" style="color:var(--muted)">${deficit!==null?(deficit>0?'deficit ✓':'surplus ⚠'):'unmeasured'}</div>
-    </div>
-  `;
+  // Stat cards
+  const cards = [
+    { label:'Current weight', value:curKg.toFixed(1), unit:'kg',
+      delta: delta!==null ? `${delta>0?'+':''}${delta.toFixed(1)} kg vs prev. week` : '',
+      deltaPos: delta!==null&&delta<=0, al:'rgba(52,211,153,.5)' },
+    { label:'Calories consumed', value:Math.round(tot.kcal).toLocaleString('en-US'), unit:'kcal',
+      sub:`/ ${t.kcal.toLocaleString('en-US')} target`, al:'rgba(96,165,250,.4)' },
+    { label:'Calories burned', value: burned ? burned.toLocaleString('en-US') : '—', unit: burned ? 'kcal' : '',
+      sub:'watch', col: burned ? 'var(--danger)' : 'var(--muted)', al:'rgba(248,113,113,.4)' },
+    { label:'Net deficit', value: deficit!==null ? Math.round(deficit).toLocaleString('en-US') : '—', unit: deficit!==null ? 'kcal' : '',
+      sub: deficit!==null ? (deficit>0?'deficit ✓':'surplus ⚠') : 'unmeasured',
+      col: deficit!==null ? (deficit>0?'var(--em-txt)':'var(--danger)') : 'var(--muted)',
+      al: deficit!==null&&deficit>0 ? 'rgba(52,211,153,.5)' : 'rgba(248,113,113,.4)' }
+  ];
 
+  document.getElementById('summary-cards').innerHTML = cards.map(c=>`
+    <div class="stat-card" style="--al:${c.al}">
+      <div class="stat-label">${c.label}</div>
+      <div class="stat-value" style="${c.col?'color:'+c.col:''}">${c.value}<span class="stat-unit">${c.unit}</span></div>
+      ${c.delta ? `<div class="stat-delta ${c.deltaPos?'pos':'neg'}">${c.delta}</div>` : ''}
+      ${c.sub ? `<div class="stat-sub">${c.sub}</div>` : ''}
+    </div>`).join('');
+
+  // Macro bars
   document.getElementById('macro-bars').innerHTML =
     macroBar('Calories', tot.kcal, t.kcal, 'bem', 'var(--em-txt)') +
-    macroBar('Protein', tot.p, t.protein, 'bprot', 'var(--info)') +
-    macroBar('Carbs', tot.c, t.carbs, 'bcarb', 'var(--warn)') +
-    macroBar('Fat', tot.f, t.fat, 'bfat', 'var(--purple)');
+    macroBar('Protein',  tot.p, t.protein, 'bprot', 'var(--info)') +
+    macroBar('Carbs',    tot.c, t.carbs,   'bcarb', 'var(--warn)') +
+    macroBar('Fat',      tot.f, t.fat,     'bfat',  'var(--purple)');
 
   document.getElementById('deficit-val').innerHTML = deficit !== null
     ? `<span style="color:${deficit>0?'var(--em-txt)':'var(--danger)'}">${deficit>0?'+':''}${Math.round(deficit).toLocaleString('en-US')} kcal</span>`
     : '<span style="color:var(--muted)">Enter burn in the log</span>';
 
+  // Mini chart
   const labels = ws.map(w=>fmtDate(w.date));
   const data   = ws.map(w=>w.kg);
   const traj   = trajectory(ws.map(w=>w.date));
@@ -515,15 +676,20 @@ function renderToday() {
   CH.mini = new Chart(document.getElementById('chart-mini'),{
     type:'line',
     data:{labels,datasets:[
-      {label:'Actual',data,borderColor:'#10B981',backgroundColor:'rgba(16,185,129,.1)',tension:.4,pointRadius:4,pointBackgroundColor:'#10B981',fill:true},
-      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.25)',borderDash:[4,4],tension:0,pointRadius:0},
-      {label:'Floor',data:floor,borderColor:'#F85149',borderDash:[2,4],tension:0,pointRadius:0}
+      {label:'Actual',data,
+        borderColor:'#10B981',borderWidth:2.5,
+        backgroundColor:(ctx)=>areaGradient(ctx,'rgba(16,185,129,.25)','rgba(16,185,129,0)'),
+        tension:.4,pointRadius:5,pointBackgroundColor:'#10B981',
+        pointBorderColor:'#07090F',pointBorderWidth:2,fill:true},
+      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.2)',borderDash:[5,5],borderWidth:1.5,tension:0,pointRadius:0},
+      {label:'Floor', data:floor,borderColor:'rgba(248,113,113,.4)',borderDash:[2,4],borderWidth:1,tension:0,pointRadius:0}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10}}},
-        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-2,max:S.profile.start+1}
+    options:{...CHART_DEFAULTS,
+      scales:{...CHART_DEFAULTS.scales,
+        y:{...CHART_DEFAULTS.scales.y,
+          ticks:{...CHART_DEFAULTS.scales.y.ticks,callback:v=>v.toFixed(1)},
+          min:S.profile.lean-2,max:S.profile.start+1
+        }
       }
     }
   });
@@ -541,7 +707,7 @@ function renderWeight() {
       <td>${i+1}</td><td>${w.date}</td><td>${w.kg.toFixed(1)} kg</td>
       <td style="color:${d===null?'var(--muted)':d<=0?'var(--em-txt)':'var(--danger)'}">${d===null?'—':(d>0?'+':'')+d.toFixed(1)+' kg'}</td>
       <td>${d===null?'':`<span class="badge ${d<=-0.3?'bok':d>0?'bdgr':'bwrn'}">${d<=-0.3?'OK':d>0?'↑':'SLOW'}</span>`}</td>
-      <td><button class="btn" style="font-size:10px;padding:2px 8px;color:var(--danger);border-color:rgba(248,81,73,.3)" onclick="delWeight('${w.date}')">✕</button></td>
+      <td><button class="btn" style="font-size:10px;padding:2px 8px;color:var(--danger);border-color:rgba(248,113,113,.25)" onclick="delWeight('${w.date}')">✕</button></td>
     </tr>`;
   }).join('');
 
@@ -552,15 +718,21 @@ function renderWeight() {
   CH.weight = new Chart(document.getElementById('chart-weight'),{
     type:'line',
     data:{labels,datasets:[
-      {label:'Actual',data,borderColor:'#10B981',backgroundColor:'rgba(16,185,129,.08)',tension:.4,pointRadius:5,pointBackgroundColor:'#10B981',fill:true},
-      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.25)',borderDash:[5,5],tension:0,pointRadius:0},
-      {label:'Floor',data:floor,borderColor:'#F85149',borderDash:[2,4],tension:0,pointRadius:0}
+      {label:'Actual',data,
+        borderColor:'#10B981',borderWidth:2.5,
+        backgroundColor:(ctx)=>areaGradient(ctx,'rgba(16,185,129,.2)','rgba(16,185,129,0)'),
+        tension:.4,pointRadius:5,pointBackgroundColor:'#10B981',
+        pointBorderColor:'#07090F',pointBorderWidth:2,fill:true},
+      {label:'Target',data:traj,borderColor:'rgba(255,255,255,.2)',borderDash:[5,5],borderWidth:1.5,tension:0,pointRadius:0},
+      {label:'Floor', data:floor,borderColor:'rgba(248,113,113,.4)',borderDash:[2,4],borderWidth:1,tension:0,pointRadius:0}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},autoSkip:false,maxRotation:45}},
-        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toFixed(1)},min:S.profile.lean-1,max:S.profile.start+1}
+    options:{...CHART_DEFAULTS,
+      scales:{...CHART_DEFAULTS.scales,
+        x:{...CHART_DEFAULTS.scales.x,ticks:{...CHART_DEFAULTS.scales.x.ticks,autoSkip:false,maxRotation:45}},
+        y:{...CHART_DEFAULTS.scales.y,
+          ticks:{...CHART_DEFAULTS.scales.y.ticks,callback:v=>v.toFixed(1)},
+          min:S.profile.lean-1,max:S.profile.start+1
+        }
       }
     }
   });
@@ -583,44 +755,43 @@ function delWeight(date) {
 function renderNutrition() {
   const t = T();
 
-  document.getElementById('nutri-targets').innerHTML = `
-    <div class="card2"><div class="mlabel">Target calories</div><div class="mval" style="font-size:20px">${t.kcal}<span class="munit">kcal</span></div></div>
-    <div class="card2"><div class="mlabel">Protein</div><div class="mval" style="font-size:20px;color:var(--info)">${t.protein}<span class="munit">g</span></div></div>
-    <div class="card2"><div class="mlabel">Carbs</div><div class="mval" style="font-size:20px;color:var(--warn)">${t.carbs}<span class="munit">g</span></div></div>
-    <div class="card2"><div class="mlabel">Fat</div><div class="mval" style="font-size:20px;color:var(--purple)">${t.fat}<span class="munit">g</span></div></div>
-  `;
+  document.getElementById('nutri-targets').innerHTML = [
+    {label:'Target calories', val:t.kcal, unit:'kcal', col:'var(--em-txt)', al:'rgba(52,211,153,.5)'},
+    {label:'Protein',  val:t.protein, unit:'g', col:'var(--info)',   al:'rgba(96,165,250,.4)'},
+    {label:'Carbs',    val:t.carbs,   unit:'g', col:'var(--warn)',   al:'rgba(252,211,77,.4)'},
+    {label:'Fat',      val:t.fat,     unit:'g', col:'var(--purple)', al:'rgba(192,132,252,.4)'}
+  ].map(c=>`
+    <div class="stat-card" style="--al:${c.al}">
+      <div class="stat-label">${c.label}</div>
+      <div class="stat-value" style="font-size:22px;color:${c.col}">${c.val}<span class="stat-unit">${c.unit}</span></div>
+    </div>`).join('');
 
   const wkMap = byWeek();
   const wkKeys = Object.keys(wkMap).sort();
 
-  const wkLabels = wkKeys.map(wk => {
-    const d = new Date(wk+'T12:00:00');
-    return 'Wk. '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  });
-  const wkKcal   = wkKeys.map(wk => { const s=weekStats(wkMap[wk]); return s.kcal!==null?Math.round(s.kcal):null; });
-  const wkBurned = wkKeys.map(wk => { const s=weekStats(wkMap[wk]); return s.burned!==null?Math.round(s.burned):null; });
+  const wkLabels = wkKeys.map(wk=>'Wk. '+new Date(wk+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+  const wkKcal   = wkKeys.map(wk=>{ const s=weekStats(wkMap[wk]); return s.kcal!==null?Math.round(s.kcal):null; });
+  const wkBurned = wkKeys.map(wk=>{ const s=weekStats(wkMap[wk]); return s.burned!==null?Math.round(s.burned):null; });
   const wkTarget = wkKeys.map(()=>t.kcal);
 
   if(CH.weekly) CH.weekly.destroy();
   CH.weekly = new Chart(document.getElementById('chart-weekly'),{
     type:'bar',
     data:{labels:wkLabels,datasets:[
-      {label:'Avg consumed/d',data:wkKcal,backgroundColor:'rgba(16,185,129,.7)',borderRadius:4,order:1},
-      {label:'Avg burned/d',data:wkBurned,backgroundColor:'rgba(248,81,73,.6)',borderRadius:4,order:2},
-      {label:'Target',data:wkTarget,type:'line',borderColor:'rgba(255,255,255,.3)',borderDash:[4,4],pointRadius:0,tension:0,fill:false,order:0}
+      {label:'Consumed avg/d',data:wkKcal,backgroundColor:'rgba(16,185,129,.7)',borderRadius:6,order:1},
+      {label:'Burned avg/d',data:wkBurned,backgroundColor:'rgba(248,113,113,.55)',borderRadius:6,order:2},
+      {label:'Target',data:wkTarget,type:'line',borderColor:'rgba(255,255,255,.2)',borderDash:[4,4],borderWidth:1.5,pointRadius:0,tension:0,fill:false,order:0}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8B949E',font:{size:10}}},
-        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8B949E',font:{size:10},callback:v=>v.toLocaleString('en-US')}}
+    options:{...CHART_DEFAULTS,
+      scales:{...CHART_DEFAULTS.scales,
+        y:{...CHART_DEFAULTS.scales.y,ticks:{...CHART_DEFAULTS.scales.y.ticks,callback:v=>v.toLocaleString('en-US')}}
       }
     }
   });
 
   document.getElementById('weekly-tbody').innerHTML = wkKeys.map(wk=>{
     const s = weekStats(wkMap[wk]);
-    const def = s.deficit !== null ? Math.round(s.deficit) : null;
+    const def = s.deficit!==null ? Math.round(s.deficit) : null;
     const defColor = def===null?'var(--muted)':def>0?'var(--em-txt)':'var(--danger)';
     const wkDate = new Date(wk+'T12:00:00');
     const wkEnd  = new Date(wkDate); wkEnd.setDate(wkDate.getDate()+6);
@@ -674,19 +845,19 @@ function renderLog() {
 
   document.getElementById('log-totals').innerHTML =
     macroBar('Calories', tot.kcal, t.kcal, 'bem', 'var(--em-txt)') +
-    macroBar('Protein', tot.p, t.protein, 'bprot', 'var(--info)') +
-    macroBar('Carbs', tot.c, t.carbs, 'bcarb', 'var(--warn)') +
-    macroBar('Fat', tot.f, t.fat, 'bfat', 'var(--purple)');
+    macroBar('Protein',  tot.p, t.protein, 'bprot', 'var(--info)') +
+    macroBar('Carbs',    tot.c, t.carbs,   'bcarb', 'var(--warn)') +
+    macroBar('Fat',      tot.f, t.fat,     'bfat',  'var(--purple)');
 
   const def = burned ? burned - tot.kcal : null;
   document.getElementById('log-deficit').innerHTML = def !== null
-    ? `<div style="display:flex;justify-content:space-between;align-items:center">
+    ? `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <span style="font-size:12px;color:var(--muted)">Burned</span>
-        <span style="font-family:var(--mono);font-size:13px;color:var(--danger)">${burned.toLocaleString('en-US')} kcal</span>
+        <span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--danger)">${burned.toLocaleString('en-US')} kcal</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
         <span style="font-size:12px;color:var(--muted)">Net deficit</span>
-        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:${def>0?'var(--em-txt)':'var(--danger)'}">${def>0?'+':''}${Math.round(def).toLocaleString('en-US')} kcal</span>
+        <span style="font-family:var(--mono);font-size:15px;font-weight:700;color:${def>0?'var(--em-txt)':'var(--danger)'}">${def>0?'+':''}${Math.round(def).toLocaleString('en-US')} kcal</span>
       </div>`
     : `<span style="font-size:12px;color:var(--muted)">No burn recorded for this day.</span>`;
 
@@ -699,7 +870,7 @@ function renderLog() {
           <span style="color:var(--info)">P ${Math.round(e.p)}g</span>
           <span style="color:var(--warn)">C ${Math.round(e.c)}g</span>
           <span style="color:var(--purple)">F ${Math.round(e.f)}g</span>
-          <button class="btn" style="font-size:10px;padding:2px 7px;color:var(--danger);border-color:rgba(248,81,73,.3)" onclick="delEntry('${date}',${i})">✕</button>
+          <button class="btn" style="font-size:10px;padding:2px 8px;color:var(--danger);border-color:rgba(248,113,113,.25)" onclick="delEntry('${date}',${i})">✕</button>
         </div>
       </div>`).join('')
     : '<p style="font-size:12px;color:var(--muted)">No food logged for this day.</p>';
@@ -724,33 +895,35 @@ function saveBurned() {
   const date = document.getElementById('log-nav-date').value || today();
   const val  = parseFloat(document.getElementById('j-burned').value);
   if(!S.nutrition[date]) S.nutrition[date]={entries:[]};
-  if(!isNaN(val) && val>0) {
+  if(!isNaN(val)&&val>0) {
     S.nutrition[date].burned = Math.round(val);
     document.getElementById('burned-saved-label').textContent='✓ saved';
   } else {
     delete S.nutrition[date].burned;
     document.getElementById('burned-saved-label').textContent='';
   }
-  save();
-  renderLog();
+  save(); renderLog();
 }
 
 function delEntry(date,idx) {
   S.nutrition[date].entries.splice(idx,1);
-  if(!S.nutrition[date].entries.length && !S.nutrition[date].burned) delete S.nutrition[date];
+  if(!S.nutrition[date].entries.length&&!S.nutrition[date].burned) delete S.nutrition[date];
   save(); renderLog();
 }
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 function renderData() {
   const nutDays = Object.keys(S.nutrition).length;
-  const entries = Object.values(S.nutrition).reduce((n,d)=>n+(d.entries?d.entries.length:0),0);
   const burnDays = Object.values(S.nutrition).filter(d=>d.burned).length;
-  document.getElementById('data-summary').innerHTML = `
-    <div class="card2"><div class="mlabel">Weigh-ins</div><div class="mval" style="font-size:20px">${Object.keys(S.weights).length}</div></div>
-    <div class="card2"><div class="mlabel">Nutrition days</div><div class="mval" style="font-size:20px">${nutDays}</div></div>
-    <div class="card2"><div class="mlabel">Burn days</div><div class="mval" style="font-size:20px">${burnDays}</div></div>
-  `;
+  document.getElementById('data-summary').innerHTML = [
+    {label:'Weigh-ins',      val:Object.keys(S.weights).length},
+    {label:'Nutrition days', val:nutDays},
+    {label:'Burn days',      val:burnDays}
+  ].map(c=>`
+    <div class="card2">
+      <div class="mlabel">${c.label}</div>
+      <div class="mval" style="font-size:22px">${c.val}</div>
+    </div>`).join('');
 }
 
 function exportJSON() {
