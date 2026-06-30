@@ -10,6 +10,9 @@
 ![Lang](https://img.shields.io/badge/language-HTML%20%7C%20CSS%20%7C%20JavaScript-informational?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
+<br/>
+<img src="assets/pixel-dumbbell.svg" alt="pixel dumbbell" width="480"/>
+
 </div>
 
 ---
