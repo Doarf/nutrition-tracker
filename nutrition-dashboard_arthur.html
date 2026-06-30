@@ -609,7 +609,7 @@ function renderNutrition() {
     }
   });
 
-  document.getElementById('weekly-tbody').innerHTML = wkKeys.map(wk=>{
+  document.getElementById('weekly-tbody').innerHTML = [...wkKeys].reverse().map(wk=>{
     const s = weekStats(wkMap[wk]);
     const def = s.deficit !== null ? Math.round(s.deficit) : null;
     const defColor = def===null?'var(--muted)':def>0?'var(--em-txt)':'var(--danger)';
