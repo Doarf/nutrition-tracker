@@ -1,41 +1,97 @@
-# Nutrition Tracker
+# nutrition-tracker
 
-A personal recomposition dashboard to track weight, calories, and macros toward a fat loss goal.
+<div align="center">
+
+**Personal recomposition dashboard — weight, calories, macros & deficit tracking**  
+*Single-file · localStorage · JSON · Chart.js · No build step*
+
+![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-browser-blue?style=flat-square)
+![Lang](https://img.shields.io/badge/language-HTML%20%7C%20CSS%20%7C%20JavaScript-informational?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+
+</div>
+
+---
+
+## About the project
+
+**nutrition-tracker** is a zero-dependency personal dashboard for tracking a recomposition goal. It runs entirely in the browser — no server, no account, no cloud. Data lives in `localStorage` and can be exported / imported as a plain JSON file at any time.
+
+### The problem
+
+Most nutrition apps are bloated, require an account, or lock your data behind a subscription. Tracking a recomp (simultaneous fat loss + muscle retention) means monitoring not just calories but the **net deficit** between intake and actual expenditure — a metric most apps don't surface clearly.
+
+### The solution
+
+| Need | Solution |
+|------|----------|
+| Daily calorie & macro logging | Food log with per-entry macro breakdown |
+| Net deficit tracking | Manual burn entry (from watch) → consumed vs burned |
+| Weekly overview | Aggregated table + bar chart per ISO week |
+| Weight progress | Weekly weigh-ins with target trajectory curve |
+| Data ownership | Export / import via plain JSON — no lock-in |
+| Zero setup | Single HTML file, open in browser and go |
+
+---
+
+## Architecture
+
+```
+Browser
+   │
+   ├── nutrition-dashboard_arthur.html   (UI + logic, self-contained)
+   │        │
+   │        ├── localStorage             (live data store)
+   │        │        │
+   │        │        └── recomp_*.json  (export / import, gitignored)
+   │        │
+   │        └── Chart.js (CDN)          (weight & weekly calorie charts)
+   │
+   └── No server · No build · No account
+```
+
+---
 
 ## Features
 
-- **Dashboard** — daily summary: weight, calories consumed, calories burned, net deficit
-- **Weight tracking** — weekly weigh-ins with chart and target trajectory
-- **Nutrition** — weekly and daily tables with averages for kcal, protein, carbs, and fat
-- **Food log** — log meals by date with full macro breakdown
-- **Calories burned** — manual entry from a fitness watch for net deficit calculation
-- **Import / Export** — full JSON backup and restore
+| Tab | What it does |
+|-----|-------------|
+| **Today** | Summary cards (weight, consumed, burned, net deficit) + macro bars + weight history chart |
+| **Weight** | Add weekly weigh-ins, view chart with actual vs target trajectory and lean floor |
+| **Nutrition** | Weekly averages table, consumed vs burned bar chart, full daily detail table |
+| **Log** | Add meals by date (name, kcal, protein, carbs, fat) + daily burn from watch |
+| **Data** | Export full history as JSON, import & merge, reset |
 
-## Stack
+---
 
-Single HTML file + JSON data file. No build step, no dependencies except [Chart.js](https://www.chartjs.org/) via CDN.
+## Software stack
 
-## Usage
+| Layer | Technology | Role |
+|-------|-----------|------|
+| UI | HTML5 + CSS3 | Layout, dark theme, responsive sidebar |
+| Logic | Vanilla JavaScript | State management, weekly aggregation, chart rendering |
+| Charts | Chart.js 4.4 (CDN) | Weight curve, weekly calorie bar chart |
+| Storage | localStorage | Persistent in-browser data store |
+| Data format | JSON | Portable export / import |
 
-1. Open `nutrition-dashboard_arthur.html` in a browser
-2. On first launch, import your data file via the **Data → Load .json** button
-3. Log meals and daily burn in the **Log** tab
-4. Add weekly weigh-ins in the **Weight** tab
-5. Export a fresh JSON backup anytime from **Data → Download .json** or the sidebar button
+---
 
 ## Data format
+
+Data is stored in `localStorage` under the key `recomp_v3` and can be exported as a JSON file at any time.
 
 ```json
 {
   "profile": {
-    "start": 100.9,
-    "goal": 80,
-    "goalDate": "2026-10-19",
-    "lean": 71,
-    "targets": { "kcal": 2100, "protein": 150, "carbs": 210, "fat": 80 }
+    "start": 0,
+    "goal": 0,
+    "goalDate": "",
+    "lean": 0,
+    "targets": { "kcal": 2000, "protein": 150, "carbs": 200, "fat": 65 }
   },
   "weights": {
-    "2026-05-18": 100.9
+    "2026-06-30": 95.9
   },
   "nutrition": {
     "2026-06-30": {
@@ -48,12 +104,59 @@ Single HTML file + JSON data file. No build step, no dependencies except [Chart.
 }
 ```
 
-## Goal
+- `profile` — personal goal and macro targets (kept private, not committed)
+- `weights` — ISO date → kg, one entry per weigh-in
+- `nutrition[date].entries` — list of meals logged that day
+- `nutrition[date].burned` — total daily expenditure from a fitness watch (optional)
 
-| | |
-|---|---|
-| Start | 100.9 kg |
-| Goal | 80 kg |
-| Deadline | October 19, 2026 |
-| Target rate | −0.7 kg / week |
-| Lean floor | 71 kg |
+---
+
+## Getting started
+
+### Prerequisites
+
+A modern browser. That's it.
+
+### Usage
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Doarf/nutrition-tracker.git
+cd nutrition-tracker
+
+# 2. Open the dashboard
+#    Double-click nutrition-dashboard_arthur.html
+#    or open it directly in your browser
+
+# 3. First launch — import your data (optional)
+#    Data → Load .json → select your recomp_*.json file
+
+# 4. Log your meals
+#    Log tab → fill in name, kcal, macros → Add
+#    Enter daily burn from your watch
+
+# 5. Add weigh-ins
+#    Weight tab → pick date, enter weight → Save
+
+# 6. Export a backup anytime
+#    Data → Download .json   (or sidebar Export button)
+```
+
+> **Privacy note** — the JSON data file is gitignored. Your personal body metrics and food logs never leave your machine unless you explicitly share the exported file.
+
+---
+
+## Repository structure
+
+```
+nutrition-tracker/
+├── nutrition-dashboard_arthur.html   # Full dashboard (UI + logic)
+├── .gitignore                        # Excludes recomp_*.json
+└── README.md
+```
+
+---
+
+<div align="center">
+  <sub>Personal project · nutrition-tracker · Recomp tracking dashboard</sub>
+</div>
