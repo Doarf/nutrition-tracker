@@ -286,11 +286,12 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <!-- DATA -->
 <div class="page" id="page-data">
-  <div class="ph"><div><div class="ptitle">Data</div><div class="psub">Import / export</div></div></div>
-  <div class="g2">
+  <div class="ph"><div><div class="ptitle">Data</div><div class="psub">Import / export · GitHub Gist sync</div></div></div>
+
+  <div class="g2" style="margin-bottom:14px">
     <div class="card">
       <div class="sec">Export</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Download the full history as JSON — same format as your current file.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Download the full history as a local JSON file.</p>
       <button class="btnem btn" onclick="exportJSON()">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
         Download .json
@@ -298,7 +299,7 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
     <div class="card">
       <div class="sec">Import</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Load an existing .json file. Entries are merged by date.</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Load a .json file. Entries are merged by date.</p>
       <label class="btn" style="cursor:pointer">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14V5M4 8l4-4 4 4"/><line x1="2" y1="2" x2="14" y2="2"/></svg>
         Load .json
@@ -306,6 +307,39 @@ hr.d{border:none;border-top:1px solid var(--border);margin:14px 0}
       </label>
     </div>
   </div>
+
+  <div class="card" style="margin-bottom:14px;border-color:rgba(88,166,255,.15)">
+    <div class="sec" style="color:var(--info)">GitHub Gist sync</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+      Sync your data across devices via a private GitHub Gist. Your token is stored only in this browser's localStorage.
+      <br><a href="https://github.com/settings/tokens/new?scopes=gist&description=recomp-dashboard" target="_blank" style="color:var(--info);text-decoration:none">→ Generate a token with <code style="font-family:var(--mono);font-size:11px">gist</code> scope</a>
+    </p>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:flex-end;margin-bottom:12px">
+      <div class="fg">
+        <label class="flabel">GitHub Personal Access Token</label>
+        <input class="finput" type="password" id="gist-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="gistSaveToken()">
+      </div>
+      <div id="gist-token-status" style="font-family:var(--mono);font-size:11px;color:var(--muted);padding-bottom:10px"></div>
+    </div>
+    <div id="gist-id-row" style="margin-bottom:14px;display:none">
+      <div class="fg">
+        <label class="flabel">Gist ID</label>
+        <input class="finput" type="text" id="gist-id-input" placeholder="Paste an existing Gist ID (optional)" oninput="gistSaveId()">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btnem btn" onclick="gistPush()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14V5M4 8l4-4 4 4"/><line x1="2" y1="2" x2="14" y2="2"/></svg>
+        Push to Gist
+      </button>
+      <button class="btn" onclick="gistPull()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+        Pull from Gist
+      </button>
+      <span id="gist-status" style="font-family:var(--mono);font-size:11px;color:var(--muted)"></span>
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom:14px">
     <div class="sec">Summary</div>
     <div class="g3" id="data-summary" style="margin-bottom:0"></div>
@@ -770,7 +804,94 @@ function resetData() {
   S=defaultState(); save(); renderData();
 }
 
+// ── GIST SYNC ─────────────────────────────────────────────────────────────────
+const GIST_CFG_KEY = 'recomp_gist_cfg';
+const GIST_FILENAME = 'recomp_data.json';
+
+function gistCfg() { try { return JSON.parse(localStorage.getItem(GIST_CFG_KEY))||{}; } catch{return{};} }
+function gistSaveCfg(cfg) { localStorage.setItem(GIST_CFG_KEY, JSON.stringify(cfg)); }
+
+function gistSaveToken() {
+  const token = document.getElementById('gist-token').value.trim();
+  const cfg = gistCfg(); cfg.token = token; gistSaveCfg(cfg);
+  document.getElementById('gist-token-status').textContent = token ? '✓' : '';
+  document.getElementById('gist-id-row').style.display = token ? 'block' : 'none';
+}
+
+function gistSaveId() {
+  const id = document.getElementById('gist-id-input').value.trim();
+  const cfg = gistCfg(); cfg.gistId = id; gistSaveCfg(cfg);
+}
+
+function gistSetStatus(msg, color) {
+  const el = document.getElementById('gist-status');
+  el.textContent = msg;
+  el.style.color = color || 'var(--muted)';
+}
+
+async function gistPush() {
+  const cfg = gistCfg();
+  if (!cfg.token) { gistSetStatus('⚠ No token set.', 'var(--warn)'); return; }
+  gistSetStatus('Pushing…', 'var(--muted)');
+  const body = { description:'recomp dashboard data', public:false,
+    files:{ [GIST_FILENAME]:{ content: JSON.stringify(S, null, 2) } } };
+  try {
+    let res, data;
+    if (cfg.gistId) {
+      res = await fetch(`https://api.github.com/gists/${cfg.gistId}`,
+        { method:'PATCH', headers:{ Authorization:`Bearer ${cfg.token}`, 'Content-Type':'application/json' },
+          body: JSON.stringify(body) });
+    } else {
+      res = await fetch('https://api.github.com/gists',
+        { method:'POST', headers:{ Authorization:`Bearer ${cfg.token}`, 'Content-Type':'application/json' },
+          body: JSON.stringify(body) });
+    }
+    data = await res.json();
+    if (!res.ok) { gistSetStatus('✕ ' + (data.message||res.status), 'var(--danger)'); return; }
+    if (!cfg.gistId) {
+      cfg.gistId = data.id; gistSaveCfg(cfg);
+      document.getElementById('gist-id-input').value = data.id;
+    }
+    const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    gistSetStatus('✓ Pushed at ' + now, 'var(--em-txt)');
+  } catch(e) { gistSetStatus('✕ Network error', 'var(--danger)'); }
+}
+
+async function gistPull() {
+  const cfg = gistCfg();
+  if (!cfg.token) { gistSetStatus('⚠ No token set.', 'var(--warn)'); return; }
+  if (!cfg.gistId) { gistSetStatus('⚠ No Gist ID — push first.', 'var(--warn)'); return; }
+  gistSetStatus('Pulling…', 'var(--muted)');
+  try {
+    const res = await fetch(`https://api.github.com/gists/${cfg.gistId}`,
+      { headers:{ Authorization:`Bearer ${cfg.token}` } });
+    const data = await res.json();
+    if (!res.ok) { gistSetStatus('✕ ' + (data.message||res.status), 'var(--danger)'); return; }
+    const content = data.files?.[GIST_FILENAME]?.content;
+    if (!content) { gistSetStatus('✕ File not found in Gist.', 'var(--danger)'); return; }
+    const remote = JSON.parse(content);
+    if (remote.weights)   Object.assign(S.weights, remote.weights);
+    if (remote.nutrition) Object.keys(remote.nutrition).forEach(d=>{ S.nutrition[d]=remote.nutrition[d]; });
+    if (remote.profile)   S.profile={...S.profile,...remote.profile};
+    save();
+    const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    gistSetStatus('✓ Pulled at ' + now, 'var(--em-txt)');
+    renderData();
+  } catch(e) { gistSetStatus('✕ Network error', 'var(--danger)'); }
+}
+
+function gistInitUI() {
+  const cfg = gistCfg();
+  if (cfg.token) {
+    document.getElementById('gist-token').value = cfg.token;
+    document.getElementById('gist-token-status').textContent = '✓';
+    document.getElementById('gist-id-row').style.display = 'block';
+  }
+  if (cfg.gistId) document.getElementById('gist-id-input').value = cfg.gistId;
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
+gistInitUI();
 renderToday();
 </script>
 </body>
